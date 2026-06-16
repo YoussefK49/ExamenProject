@@ -3,22 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instagram Home</title>
+  <title>Instant Home</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
 </head>
-<body>
+<body data-theme="light">
   <header class="topbar">
     <div class="brand">
-      <span class="brand-gradient">insta</span>
-      <span>gram</span>
+      <span class="brand-accent">I</span>nstant
     </div>
     <div class="top-actions">
       <button class="icon-btn" aria-label="Berichten">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 2H3C1.9 2 1 2.9 1 4V20L5 16H21C22.1 16 23 15.1 23 14V4C23 2.9 22.1 2 21 2Z"/></svg>
       </button>
-      <button class="icon-btn" aria-label="Activity">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35Z"/></svg>
-      </button>
+      <button id="themeToggle" class="icon-btn" aria-label="Wissel thema">☀️</button>
     </div>
   </header>
 
@@ -28,23 +26,23 @@
         <div class="story-ring">
           <div class="story-avatar">+</div>
         </div>
-        <span>Jouw verhaal</span>
+        <span>Nieuw</span>
       </div>
       <div class="story-item">
-        <div class="story-ring"><div class="story-avatar">A</div></div>
-        <span>Anna</span>
+        <div class="story-ring"><div class="story-avatar">T</div></div>
+        <span>Trends</span>
       </div>
       <div class="story-item">
-        <div class="story-ring"><div class="story-avatar">B</div></div>
-        <span>Bas</span>
+        <div class="story-ring"><div class="story-avatar">L</div></div>
+        <span>Local</span>
       </div>
       <div class="story-item">
-        <div class="story-ring"><div class="story-avatar">C</div></div>
-        <span>Celine</span>
+        <div class="story-ring"><div class="story-avatar">F</div></div>
+        <span>Favoriet</span>
       </div>
       <div class="story-item">
-        <div class="story-ring"><div class="story-avatar">D</div></div>
-        <span>Daan</span>
+        <div class="story-ring"><div class="story-avatar">O</div></div>
+        <span>Ontdekt</span>
       </div>
     </section>
 
@@ -106,9 +104,9 @@
   <nav class="bottom-nav">
     <button class="nav-btn active">🏠<span>Home</span></button>
     <button class="nav-btn">🔍<span>Zoek</span></button>
-    <button class="nav-btn">🎬<span>Reels</span></button>
-    <button class="nav-btn">🛍️<span>Shop</span></button>
-    <button class="nav-btn">👤<span>Profiel</span></button>
+    <button class="nav-btn">✨<span>Ontdek</span></button>
+    <button class="nav-btn">📌<span>Favorieten</span></button>
+    <button class="nav-btn">👤<span>Account</span></button>
   </nav>
 </body>
 </html>

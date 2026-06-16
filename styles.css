@@ -1,0 +1,250 @@
+:root {
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #fafafa;
+  color: #262626;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #fafafa;
+}
+
+button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #fff;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.brand-gradient {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.top-actions {
+  display: flex;
+  gap: 14px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: #262626;
+  font-size: 1rem;
+}
+
+main.content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 18px 0 84px;
+}
+
+.story-strip {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.story-item {
+  flex: 0 0 auto;
+  width: 76px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #262626;
+}
+
+.story-add .story-ring,
+.story-ring {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+}
+
+.story-add .story-ring {
+  border: 1px solid #dbdbdb;
+}
+
+.story-ring {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  padding: 3px;
+}
+
+.story-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #262626;
+}
+
+.feed {
+  display: grid;
+  gap: 20px;
+  padding: 0 0 0 0;
+}
+
+.post-card {
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+
+.profile-name {
+  margin: 0;
+  font-weight: 700;
+}
+
+.profile-location {
+  margin: 2px 0 0;
+  color: #8e8e8e;
+  font-size: 0.85rem;
+}
+
+.more-btn {
+  font-size: 1.4rem;
+  color: #262626;
+}
+
+.post-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-size: cover;
+  background-position: center;
+}
+
+.image-gradient {
+  background: linear-gradient(135deg, #f5e1d0 0%, #f7d4cb 40%, #f0c1d1 100%);
+}
+
+.image-city {
+  background: linear-gradient(135deg, #d5e4ff 0%, #f0e7ff 50%, #ffe7f2 100%);
+}
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.actions-left {
+  display: flex;
+  gap: 14px;
+}
+
+.post-actions button {
+  font-size: 1.1rem;
+}
+
+.post-details {
+  padding: 0 16px 16px;
+  line-height: 1.5;
+}
+
+.likes {
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  background: #fff;
+  border-top: 1px solid #dbdbdb;
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #8e8e8e;
+  font-size: 0.85rem;
+}
+
+.nav-btn.active {
+  color: #262626;
+}
+
+@media (min-width: 720px) {
+  body {
+    background: #efefef;
+  }
+
+  main.content {
+    margin: 0 auto;
+  }
+
+  .bottom-nav {
+    display: none;
+  }
+}

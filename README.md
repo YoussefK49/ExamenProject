@@ -1,2 +1,0 @@
-# ExamenProject
-Examenproject, insta replicate.

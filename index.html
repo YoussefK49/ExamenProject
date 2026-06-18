@@ -3,110 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instant Home</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="script.js" defer></script>
+  <title>Instant</title>
+  <meta http-equiv="refresh" content="0;url=index.php">
+  <script>
+    window.location.replace('index.php');
+  </script>
 </head>
-<body data-theme="light">
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-accent">I</span>nstant
-    </div>
-    <div class="top-actions">
-      <button class="icon-btn" aria-label="Berichten">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 2H3C1.9 2 1 2.9 1 4V20L5 16H21C22.1 16 23 15.1 23 14V4C23 2.9 22.1 2 21 2Z"/></svg>
-      </button>
-      <button id="themeToggle" class="icon-btn" aria-label="Wissel thema">☀️</button>
-    </div>
-  </header>
-
-  <main class="content">
-    <section class="story-strip">
-      <div class="story-item story-add">
-        <div class="story-ring">
-          <div class="story-avatar">+</div>
-        </div>
-        <span>Nieuw</span>
-      </div>
-      <div class="story-item">
-        <div class="story-ring"><div class="story-avatar">T</div></div>
-        <span>Trends</span>
-      </div>
-      <div class="story-item">
-        <div class="story-ring"><div class="story-avatar">L</div></div>
-        <span>Local</span>
-      </div>
-      <div class="story-item">
-        <div class="story-ring"><div class="story-avatar">F</div></div>
-        <span>Favoriet</span>
-      </div>
-      <div class="story-item">
-        <div class="story-ring"><div class="story-avatar">O</div></div>
-        <span>Ontdekt</span>
-      </div>
-    </section>
-
-    <section class="feed">
-      <article class="post-card">
-        <div class="post-header">
-          <div class="profile">
-            <div class="profile-avatar">A</div>
-            <div>
-              <p class="profile-name">anna.nl</p>
-              <p class="profile-location">Amsterdam</p>
-            </div>
-          </div>
-          <button class="more-btn">...</button>
-        </div>
-        <div class="post-image image-gradient"></div>
-        <div class="post-actions">
-          <div class="actions-left">
-            <button class="icon-btn"><span>♥</span></button>
-            <button class="icon-btn"><span>💬</span></button>
-            <button class="icon-btn"><span>✈</span></button>
-          </div>
-          <button class="icon-btn"><span>🔖</span></button>
-        </div>
-        <div class="post-details">
-          <p class="likes">1.234 vind-ik-leuks</p>
-          <p><span class="profile-name">anna.nl</span> Zonsondergang bij de gracht 🌇</p>
-        </div>
-      </article>
-
-      <article class="post-card">
-        <div class="post-header">
-          <div class="profile">
-            <div class="profile-avatar">B</div>
-            <div>
-              <p class="profile-name">bas_foto</p>
-              <p class="profile-location">Rotterdam</p>
-            </div>
-          </div>
-          <button class="more-btn">...</button>
-        </div>
-        <div class="post-image image-city"></div>
-        <div class="post-actions">
-          <div class="actions-left">
-            <button class="icon-btn"><span>♥</span></button>
-            <button class="icon-btn"><span>💬</span></button>
-            <button class="icon-btn"><span>✈</span></button>
-          </div>
-          <button class="icon-btn"><span>🔖</span></button>
-        </div>
-        <div class="post-details">
-          <p class="likes">862 vind-ik-leuks</p>
-          <p><span class="profile-name">bas_foto</span> Streetstyle vibes in de stad ✨</p>
-        </div>
-      </article>
-    </section>
-  </main>
-
-  <nav class="bottom-nav">
-    <button class="nav-btn active">🏠<span>Home</span></button>
-    <button class="nav-btn">🔍<span>Zoek</span></button>
-    <button class="nav-btn">✨<span>Ontdek</span></button>
-    <button class="nav-btn">📌<span>Favorieten</span></button>
-    <button class="nav-btn">👤<span>Account</span></button>
-  </nav>
+<body>
+  <p>Je wordt doorgestuurd naar <a href="index.php">index.php</a>...</p>
 </body>
 </html>

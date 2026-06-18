@@ -98,3 +98,43 @@ function createPost($userId, $caption, $imageUrl = null) {
     $stmt->execute();
     $stmt->close();
 }
+
+function loginUser($username, $password) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("SELECT id, username, password_hash FROM users WHERE username = ? LIMIT 1");
+    $stmt->bind_param('s', $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
+    
+    if ($user && password_verify($password, $user['password_hash'])) {
+        return $user;
+    }
+    return false;
+}
+
+function registerUser($username, $email, $password) {
+    global $mysqli;
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    
+    $stmt = $mysqli->prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)");
+    $stmt->bind_param('sss', $username, $email, $passwordHash);
+    
+    try {
+        $stmt->execute();
+        $stmt->close();
+        return true;
+    } catch (Exception $e) {
+        $stmt->close();
+        return false;
+    }
+}
+
+function isLoggedIn() {
+    return isset($_SESSION['user_id']);
+}
+
+function getCurrentUserId() {
+    return $_SESSION['user_id'] ?? null;
+}

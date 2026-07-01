@@ -152,10 +152,9 @@ a {
 
 /* Main Container */
 .main-container {
-  display: grid;
-  grid-template-columns: 470px 320px;
-  gap: 28px;
-  max-width: 935px;
+  display: flex;
+  flex-direction: column;
+  max-width: 470px;
   margin: 30px auto 100px;
   padding: 0 20px;
 }
@@ -666,8 +665,26 @@ a {
   outline: none;
 }
 
-.modal-form textarea:focus {
+.modal-form textarea:focus,
+.modal-form input:focus {
   border-color: var(--brand);
+}
+
+.modal-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.modal-form input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .modal-form p {

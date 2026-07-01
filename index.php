@@ -1,19 +1,93 @@
 <?php
+session_start();
 require_once 'db.php';
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+// Login handling
+=======
+>>>>>>> origin/main
 require_once 'auth.php';
 
+>>>>>>> origin/main
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
     requireLogin();
     $action = $_POST['action'];
+<<<<<<< HEAD
+
+    if ($action === 'login' && !empty($_POST['username']) && !empty($_POST['password'])) {
+        $user = loginUser($_POST['username'], $_POST['password']);
+        if ($user) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            header('Location: index.php');
+            exit;
+        } else {
+            $loginError = 'Ongeldige gebruikersnaam of wachtwoord';
+        }
+    }
+
+    if ($action === 'register' && !empty($_POST['username']) && !empty($_POST['email']) && !empty($_POST['password'])) {
+        if (registerUser($_POST['username'], $_POST['email'], $_POST['password'])) {
+            $user = loginUser($_POST['username'], $_POST['password']);
+            if ($user) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                header('Location: index.php');
+                exit;
+            }
+        } else {
+            $registerError = 'Gebruikersnaam of e-mail bestaat al';
+        }
+    }
+
+    if ($action === 'logout') {
+        session_destroy();
+=======
     $postId = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
     $userId = getCurrentUserId();
 
     if ($action === 'like' && $postId > 0) {
         addLike($postId, $userId);
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
+>>>>>>> origin/main
         header('Location: index.php');
         exit;
     }
 
+<<<<<<< HEAD
+    // Actions die login vereisen
+    if (isLoggedIn()) {
+        $userId = getCurrentUserId();
+        $postId = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
+
+        if ($action === 'like' && $postId > 0) {
+            addLike($postId, $userId);
+            header('Location: index.php');
+            exit;
+        }
+
+        if ($action === 'comment' && $postId > 0 && !empty(trim($_POST['comment_text']))) {
+            addComment($postId, $userId, trim($_POST['comment_text']));
+            header('Location: index.php');
+            exit;
+        }
+
+        if ($action === 'create_post' && !empty(trim($_POST['caption']))) {
+            createPost($userId, trim($_POST['caption']));
+            header('Location: index.php');
+            exit;
+        }
+
+        if ($action === 'create_story') {
+            addStory($userId);
+            header('Location: index.php');
+            exit;
+        }
+=======
     if ($action === 'comment' && $postId > 0 && !empty(trim($_POST['comment_text']))) {
         addComment($postId, $userId, trim($_POST['comment_text']));
         header('Location: index.php');
@@ -28,6 +102,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 
     if ($action === 'create_story') {
         addStory($userId);
+<<<<<<< HEAD
+        header('Location: index.php');
+        exit;
+    }
+
+    if ($action === 'follow' && !empty($_POST['following_id'])) {
+        $followingId = (int) $_POST['following_id'];
+        followUser($userId, $followingId);
+        header('Location: index.php');
+        exit;
+    }
+
+    if ($action === 'unfollow' && !empty($_POST['following_id'])) {
+        $followingId = (int) $_POST['following_id'];
+        unfollowUser($userId, $followingId);
+=======
+>>>>>>> origin/main
         header('Location: index.php');
         exit;
     }
@@ -44,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
         unfollowUser($userId, $followingId);
         header('Location: index.php');
         exit;
+>>>>>>> origin/main
     }
 }
 
@@ -83,18 +175,28 @@ $stories = getStories(10);
           <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
       </button>
+<<<<<<< HEAD
+      <?php if (isLoggedIn()): ?>
+      <button class="nav-icon" aria-label="Nieuwe post" onclick="document.getElementById('postModal').style.display='flex'">
+=======
       <button class="nav-icon" aria-label="Berichten">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
       </button>
       <button class="nav-icon" aria-label="Nieuwe post" <?php echo isLoggedIn() ? "onclick=\"document.getElementById('postModal').style.display='flex'\"" : "onclick=\"window.location.href='login.php'\""; ?>>
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
+>>>>>>> origin/main
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
           <line x1="12" y1="8" x2="12" y2="16"/>
           <line x1="8" y1="12" x2="16" y2="12"/>
         </svg>
       </button>
+<<<<<<< HEAD
+=======
       <button class="nav-icon" aria-label="Ontdek">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -106,6 +208,10 @@ $stories = getStories(10);
       </button>
       <?php else: ?>
       <a href="login.php" class="nav-icon" style="text-decoration: none; color: var(--text); font-weight: 600; font-size: 14px; display: flex; align-items: center;">Inloggen</a>
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
+>>>>>>> origin/main
       <?php endif; ?>
       <button id="themeToggle" class="nav-icon" aria-label="Wissel thema">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -120,12 +226,43 @@ $stories = getStories(10);
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
         </svg>
       </button>
+      <?php if (isLoggedIn()): ?>
+      <button class="nav-icon profile-btn" aria-label="Profiel">
+        <div class="profile-avatar-small"><?php echo htmlspecialchars(substr($_SESSION['username'], 0, 1), ENT_QUOTES, 'UTF-8'); ?></div>
+      </button>
+      <form method="post" style="display:inline;">
+        <input type="hidden" name="action" value="logout" />
+        <button class="nav-icon" aria-label="Uitloggen" title="Uitloggen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </form>
+      <?php else: ?>
+      <button class="nav-icon" onclick="document.getElementById('loginModal').style.display='flex'" aria-label="Inloggen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <?php endif; ?>
     </div>
   </header>
 
   <main class="main-container">
     <div class="stories-section">
+<<<<<<< HEAD
       <div class="story-item story-add" <?php echo isLoggedIn() ? "onclick=\"document.getElementById('storyModal').style.display='flex'\"" : "onclick=\"window.location.href='login.php'\""; ?>>
+=======
+<<<<<<< HEAD
+      <?php if (isLoggedIn()): ?>
+      <div class="story-item story-add" onclick="document.getElementById('storyModal').style.display='flex'">
+=======
+      <div class="story-item story-add" <?php echo isLoggedIn() ? "onclick=\"document.getElementById('storyModal').style.display='flex'\"" : "onclick=\"window.location.href='login.php'\""; ?>>
+>>>>>>> origin/main
+>>>>>>> origin/main
         <div class="story-ring">
           <div class="story-avatar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -136,6 +273,7 @@ $stories = getStories(10);
         </div>
         <span>Nieuw</span>
       </div>
+      <?php endif; ?>
       <?php foreach ($stories as $story): ?>
       <div class="story-item">
         <div class="story-ring">
@@ -172,12 +310,21 @@ $stories = getStories(10);
                 </svg>
               </button>
             </form>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
             <?php else: ?>
             <button class="action-btn like-button" onclick="window.location.href='login.php'" aria-label="Like">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
               </svg>
             </button>
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
+>>>>>>> origin/main
             <?php endif; ?>
             <button class="action-btn comment-btn" data-target="comment_text_<?php echo (int)$post['id']; ?>" aria-label="Reactie">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -214,14 +361,28 @@ $stories = getStories(10);
           <button type="submit">Plaatsen</button>
         </form>
         <?php else: ?>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        <div class="comment-form">
+          <input type="text" placeholder="Log in om te reageren..." disabled />
+        </div>
+=======
+>>>>>>> origin/main
         <form class="comment-form" onsubmit="window.location.href='login.php'; return false;">
           <input id="comment_text_<?php echo (int)$post['id']; ?>" type="text" name="comment_text" placeholder="Reactie toevoegen..." readonly />
           <button type="submit">Plaatsen</button>
         </form>
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
+>>>>>>> origin/main
         <?php endif; ?>
       </article>
       <?php endforeach; ?>
     </div>
+<<<<<<< HEAD
+=======
 
     <aside class="sidebar">
       <div class="sidebar-profile">
@@ -300,18 +461,28 @@ $stories = getStories(10);
         <p>© 2024 INSTANT</p>
       </div>
     </aside>
+>>>>>>> origin/main
   </main>
 
   <nav class="mobile-nav">
     <button class="mobile-nav-btn active">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     </button>
+<<<<<<< HEAD
+    <?php if (isLoggedIn()): ?>
+    <button class="mobile-nav-btn" onclick="document.getElementById('postModal').style.display='flex'">
+=======
     <button class="mobile-nav-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
     <button class="mobile-nav-btn" <?php echo isLoggedIn() ? "onclick=\"document.getElementById('postModal').style.display='flex'\"" : "onclick=\"window.location.href='login.php'\""; ?>>
+<<<<<<< HEAD
+=======
+>>>>>>> origin/main
+>>>>>>> origin/main
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
     </button>
+    <?php endif; ?>
     <button class="mobile-nav-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     </button>
@@ -319,8 +490,33 @@ $stories = getStories(10);
     <button class="mobile-nav-btn">
       <div class="mobile-avatar"><?php echo htmlspecialchars(substr($_SESSION['username'], 0, 1), ENT_QUOTES, 'UTF-8'); ?></div>
     </button>
+<<<<<<< HEAD
     <?php else: ?>
     <a href="login.php" class="mobile-nav-btn" style="text-decoration: none; color: var(--text); font-size: 12px; display: flex; align-items: center; justify-content: center;">Inloggen</a>
+=======
+<<<<<<< HEAD
+    <form method="post" style="display:inline;">
+      <input type="hidden" name="action" value="logout" />
+      <button class="mobile-nav-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </form>
+    <?php else: ?>
+    <button class="mobile-nav-btn" onclick="document.getElementById('loginModal').style.display='flex'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </button>
+=======
+    <?php else: ?>
+    <a href="login.php" class="mobile-nav-btn" style="text-decoration: none; color: var(--text); font-size: 12px; display: flex; align-items: center; justify-content: center;">Inloggen</a>
+>>>>>>> origin/main
+>>>>>>> origin/main
     <?php endif; ?>
   </nav>
 
@@ -364,6 +560,51 @@ $stories = getStories(10);
         <input type="hidden" name="action" value="create_post" />
         <textarea name="caption" placeholder="Wat wil je delen?" required></textarea>
         <button type="submit" class="modal-submit">Post Plaatsen</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Inloggen</h2>
+        <button class="modal-close" onclick="document.getElementById('loginModal').style.display='none'">×</button>
+      </div>
+      <form method="post" class="modal-form">
+        <input type="hidden" name="action" value="login" />
+        <?php if (isset($loginError)): ?>
+        <p style="color: #ed4956;"><?php echo htmlspecialchars($loginError, ENT_QUOTES, 'UTF-8'); ?></p>
+        <?php endif; ?>
+        <input type="text" name="username" placeholder="Gebruikersnaam" required />
+        <input type="password" name="password" placeholder="Wachtwoord" required />
+        <button type="submit" class="modal-submit">Inloggen</button>
+        <p style="text-align: center; margin-top: 16px;">
+          Nog geen account? <a href="#" onclick="document.getElementById('loginModal').style.display='none'; document.getElementById('registerModal').style.display='flex'">Registreren</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Registreren</h2>
+        <button class="modal-close" onclick="document.getElementById('registerModal').style.display='none'">×</button>
+      </div>
+      <form method="post" class="modal-form">
+        <input type="hidden" name="action" value="register" />
+        <?php if (isset($registerError)): ?>
+        <p style="color: #ed4956;"><?php echo htmlspecialchars($registerError, ENT_QUOTES, 'UTF-8'); ?></p>
+        <?php endif; ?>
+        <input type="text" name="username" placeholder="Gebruikersnaam" required />
+        <input type="email" name="email" placeholder="E-mail" required />
+        <input type="password" name="password" placeholder="Wachtwoord" required />
+        <button type="submit" class="modal-submit">Registreren</button>
+        <p style="text-align: center; margin-top: 16px;">
+          Al een account? <a href="#" onclick="document.getElementById('registerModal').style.display='none'; document.getElementById('loginModal').style.display='flex'">Inloggen</a>
+        </p>
       </form>
     </div>
   </div>

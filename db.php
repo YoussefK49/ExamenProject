@@ -98,3 +98,57 @@ function createPost($userId, $caption, $imageUrl = null) {
     $stmt->execute();
     $stmt->close();
 }
+
+function registerUser($username, $email, $password) {
+    global $mysqli;
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = $mysqli->prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)");
+    $stmt->bind_param('sss', $username, $email, $passwordHash);
+    $result = $stmt->execute();
+    $userId = $stmt->insert_id;
+    $stmt->close();
+    return $result ? $userId : false;
+}
+
+function loginUser($username, $password) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("SELECT id, username, email, password_hash, avatar FROM users WHERE username = ? OR email = ? LIMIT 1");
+    $stmt->bind_param('ss', $username, $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
+    
+    if ($user && password_verify($password, $user['password_hash'])) {
+        unset($user['password_hash']);
+        return $user;
+    }
+    return false;
+}
+
+function followUser($followerId, $followingId) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("INSERT IGNORE INTO follows (follower_id, following_id) VALUES (?, ?)");
+    $stmt->bind_param('ii', $followerId, $followingId);
+    $stmt->execute();
+    $stmt->close();
+}
+
+function unfollowUser($followerId, $followingId) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("DELETE FROM follows WHERE follower_id = ? AND following_id = ?");
+    $stmt->bind_param('ii', $followerId, $followingId);
+    $stmt->execute();
+    $stmt->close();
+}
+
+function isFollowing($followerId, $followingId) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("SELECT id FROM follows WHERE follower_id = ? AND following_id = ? LIMIT 1");
+    $stmt->bind_param('ii', $followerId, $followingId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $exists = $result->num_rows > 0;
+    $stmt->close();
+    return $exists;
+}

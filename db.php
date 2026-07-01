@@ -39,6 +39,53 @@ function getPosts($limit = 10) {
     return $posts;
 }
 
+function getPostsByUser($userId, $limit = 10) {
+    global $mysqli;
+    $sql = "SELECT p.id, p.caption, p.image_url, p.created_at, u.username, u.avatar,
+        COALESCE(l.likes, 0) AS like_count,
+        COALESCE(c.comments, 0) AS comment_count
+        FROM posts p
+        JOIN users u ON p.user_id = u.id
+        LEFT JOIN (
+            SELECT post_id, COUNT(*) AS likes
+            FROM likes
+            GROUP BY post_id
+        ) l ON l.post_id = p.id
+        LEFT JOIN (
+            SELECT post_id, COUNT(*) AS comments
+            FROM comments
+            GROUP BY post_id
+        ) c ON c.post_id = p.id
+        WHERE p.user_id = ?
+        ORDER BY p.created_at DESC
+        LIMIT ?";
+
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('ii', $userId, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $posts = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $posts;
+}
+
+function getStoriesByUser($userId, $limit = 10) {
+    global $mysqli;
+    $sql = "SELECT s.id, s.image_url, s.created_at, s.expires_at, u.username, u.avatar
+            FROM stories s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.user_id = ? AND s.expires_at > NOW()
+            ORDER BY s.created_at DESC
+            LIMIT ?";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('ii', $userId, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stories = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $stories;
+}
+
 function addLike($postId, $userId) {
     global $mysqli;
     $stmt = $mysqli->prepare("INSERT IGNORE INTO likes (post_id, user_id, created_at) VALUES (?, ?, NOW())");
@@ -99,15 +146,6 @@ function createPost($userId, $caption, $imageUrl = null) {
     $stmt->close();
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-function loginUser($username, $password) {
-    global $mysqli;
-    $stmt = $mysqli->prepare("SELECT id, username, password_hash FROM users WHERE username = ? LIMIT 1");
-    $stmt->bind_param('s', $username);
-=======
->>>>>>> origin/main
 function registerUser($username, $email, $password) {
     global $mysqli;
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
@@ -123,57 +161,18 @@ function loginUser($username, $password) {
     global $mysqli;
     $stmt = $mysqli->prepare("SELECT id, username, email, password_hash, avatar FROM users WHERE username = ? OR email = ? LIMIT 1");
     $stmt->bind_param('ss', $username, $username);
-<<<<<<< HEAD
-=======
->>>>>>> origin/main
->>>>>>> origin/main
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
     $stmt->close();
     
     if ($user && password_verify($password, $user['password_hash'])) {
-<<<<<<< HEAD
         unset($user['password_hash']);
-=======
-<<<<<<< HEAD
-=======
-        unset($user['password_hash']);
->>>>>>> origin/main
->>>>>>> origin/main
         return $user;
     }
     return false;
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-function registerUser($username, $email, $password) {
-    global $mysqli;
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-    
-    $stmt = $mysqli->prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)");
-    $stmt->bind_param('sss', $username, $email, $passwordHash);
-    
-    try {
-        $stmt->execute();
-        $stmt->close();
-        return true;
-    } catch (Exception $e) {
-        $stmt->close();
-        return false;
-    }
-}
-
-function isLoggedIn() {
-    return isset($_SESSION['user_id']);
-}
-
-function getCurrentUserId() {
-    return $_SESSION['user_id'] ?? null;
-=======
->>>>>>> origin/main
 function followUser($followerId, $followingId) {
     global $mysqli;
     $stmt = $mysqli->prepare("INSERT IGNORE INTO follows (follower_id, following_id) VALUES (?, ?)");
@@ -199,8 +198,4 @@ function isFollowing($followerId, $followingId) {
     $exists = $result->num_rows > 0;
     $stmt->close();
     return $exists;
-<<<<<<< HEAD
-=======
->>>>>>> origin/main
->>>>>>> origin/main
 }

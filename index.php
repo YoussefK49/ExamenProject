@@ -70,13 +70,13 @@ $stories = getStories(10);
       </svg>
       <span class="brand-text">Instant</span>
     </div>
-    <div class="navbar-search">
-      <input type="text" placeholder="Zoek..." class="search-input">
+    <form action="search.php" method="get" class="navbar-search">
+      <input type="search" name="q" placeholder="Zoek accounts..." class="search-input" autocomplete="off">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
-    </div>
+    </form>
     <div class="navbar-icons">
       <button class="nav-icon" aria-label="Home">
         <svg viewBox="0 0 24 24" fill="currentColor">

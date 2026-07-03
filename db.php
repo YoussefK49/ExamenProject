@@ -199,3 +199,27 @@ function isFollowing($followerId, $followingId) {
     $stmt->close();
     return $exists;
 }
+
+function searchUsers($query, $limit = 20) {
+    global $mysqli;
+    $query = trim($query);
+    if ($query === '') {
+        return [];
+    }
+
+    $like = '%' . $query . '%';
+    $sql = "SELECT u.id, u.username, u.email, u.avatar, u.created_at,
+            (SELECT COUNT(*) FROM posts p WHERE p.user_id = u.id) AS post_count
+            FROM users u
+            WHERE u.username LIKE ? OR u.email LIKE ?
+            ORDER BY u.username ASC
+            LIMIT ?";
+
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('ssi', $like, $like, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $users = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $users;
+}

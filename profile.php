@@ -23,12 +23,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 $user = null;
 $posts = [];
 $stories = [];
+$isOwnProfile = false;
+$viewUserId = isset($_GET['user_id']) ? (int) $_GET['user_id'] : 0;
 
-if (isLoggedIn()) {
+if ($viewUserId > 0) {
+    $user = getUser($viewUserId);
+    if ($user) {
+        $posts = getPostsByUser($viewUserId, 20);
+        $stories = getStoriesByUser($viewUserId, 10);
+        $isOwnProfile = isLoggedIn() && getCurrentUserId() === $viewUserId;
+    }
+} elseif (isLoggedIn()) {
     $userId = getCurrentUserId();
     $user = getUser($userId);
     $posts = getPostsByUser($userId, 20);
     $stories = getStoriesByUser($userId, 10);
+    $isOwnProfile = true;
 }
 ?>
 <!DOCTYPE html>
@@ -51,13 +61,13 @@ if (isLoggedIn()) {
       </svg>
       <span class="brand-text">Instant</span>
     </div>
-    <div class="navbar-search">
-      <input type="text" placeholder="Zoek..." class="search-input">
+    <form action="search.php" method="get" class="navbar-search">
+      <input type="search" name="q" placeholder="Zoek accounts..." class="search-input" autocomplete="off">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
-    </div>
+    </form>
     <div class="navbar-icons">
       <a href="index.php" class="nav-icon" aria-label="Home">
         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -98,7 +108,12 @@ if (isLoggedIn()) {
   </header>
 
   <main class="main-container">
-    <?php if (!isLoggedIn()): ?>
+    <?php if ($viewUserId > 0 && !$user): ?>
+    <div class="empty-state">
+      <p>Account niet gevonden.</p>
+      <a href="search.php" class="btn-primary" style="margin-top: 16px; display: inline-block;">Terug naar zoeken</a>
+    </div>
+    <?php elseif (!$user && !isLoggedIn()): ?>
     <div class="profile-guest">
       <div class="profile-guest-content">
         <div class="profile-guest-icon">
@@ -115,9 +130,9 @@ if (isLoggedIn()) {
         </div>
       </div>
     </div>
-    <?php else: ?>
+    <?php elseif ($user): ?>
     <div class="profile-header">
-      <div class="profile-avatar-large"></div>
+      <div class="profile-avatar-large"><?php echo htmlspecialchars(strtoupper(mb_substr($user['username'], 0, 1)), ENT_QUOTES, 'UTF-8'); ?></div>
       <div class="profile-info">
         <h1><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></h1>
         <p><?php echo count($posts); ?> posts</p>
@@ -132,7 +147,7 @@ if (isLoggedIn()) {
     <div class="profile-content">
       <?php if (empty($posts)): ?>
       <div class="empty-state">
-        <p>Nog geen posts. Plaats je eerste post!</p>
+        <p><?php echo $isOwnProfile ? 'Nog geen posts. Plaats je eerste post!' : 'Deze gebruiker heeft nog geen posts.'; ?></p>
       </div>
       <?php else: ?>
       <div class="profile-posts">
@@ -174,12 +189,14 @@ if (isLoggedIn()) {
             </p>
             <p class="post-comments"><?php echo (int)$post['comment_count']; ?> reacties</p>
           </div>
-          <form method="post" class="comment-form">
-            <input type="hidden" name="action" value="comment" />
-            <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
-            <input id="comment_text_<?php echo (int)$post['id']; ?>" type="text" name="comment_text" placeholder="Reactie toevoegen..." required />
-            <button type="submit">Plaatsen</button>
-          </form>
+      <?php if ($isOwnProfile): ?>
+      <form method="post" class="comment-form" style="margin-top: 16px;">
+        <input type="hidden" name="action" value="comment" />
+        <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
+        <input id="comment_text_<?php echo (int)$post['id']; ?>" type="text" name="comment_text" placeholder="Reactie toevoegen..." required />
+        <button type="submit">Plaatsen</button>
+      </form>
+      <?php endif; ?>
         </article>
         <?php endforeach; ?>
       </div>

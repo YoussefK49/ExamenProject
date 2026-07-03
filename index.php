@@ -26,12 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
         exit;
     }
 
-    if ($action === 'create_story') {
-        addStory($userId);
-        header('Location: index.php');
-        exit;
-    }
-
     if ($action === 'follow' && !empty($_POST['following_id'])) {
         $followingId = (int) $_POST['following_id'];
         followUser($userId, $followingId);
@@ -48,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 }
 
 $posts = getPosts(10);
-$stories = getStories(10);
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -124,28 +117,6 @@ $stories = getStories(10);
   </header>
 
   <main class="main-container">
-    <div class="stories-section">
-      <div class="story-item story-add" <?php echo isLoggedIn() ? "onclick=\"document.getElementById('storyModal').style.display='flex'\"" : "onclick=\"window.location.href='login.php'\""; ?>>
-        <div class="story-ring">
-          <div class="story-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-          </div>
-        </div>
-        <span>Nieuw</span>
-      </div>
-      <?php foreach ($stories as $story): ?>
-      <div class="story-item">
-        <div class="story-ring">
-          <div class="story-avatar"></div>
-        </div>
-        <span><?php echo htmlspecialchars($story['username'], ENT_QUOTES, 'UTF-8'); ?></span>
-      </div>
-      <?php endforeach; ?>
-    </div>
-
     <div class="feed-section">
       <?php foreach ($posts as $post): ?>
       <article class="post-card">
@@ -337,21 +308,6 @@ $stories = getStories(10);
     return date('d M Y', $time);
   }
   ?>
-
-  <!-- Story Modal -->
-  <div id="storyModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Nieuwe Story</h2>
-        <button class="modal-close" onclick="document.getElementById('storyModal').style.display='none'">×</button>
-      </div>
-      <form method="post" class="modal-form">
-        <input type="hidden" name="action" value="create_story" />
-        <p>Story maken (24 uur zichtbaar)</p>
-        <button type="submit" class="modal-submit">Story Plaatsen</button>
-      </form>
-    </div>
-  </div>
 
   <!-- Post Modal -->
   <div id="postModal" class="modal" style="display: none;">

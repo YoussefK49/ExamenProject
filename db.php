@@ -69,23 +69,6 @@ function getPostsByUser($userId, $limit = 10) {
     return $posts;
 }
 
-function getStoriesByUser($userId, $limit = 10) {
-    global $mysqli;
-    $sql = "SELECT s.id, s.image_url, s.created_at, s.expires_at, u.username, u.avatar
-            FROM stories s
-            JOIN users u ON s.user_id = u.id
-            WHERE s.user_id = ? AND s.expires_at > NOW()
-            ORDER BY s.created_at DESC
-            LIMIT ?";
-    $stmt = $mysqli->prepare($sql);
-    $stmt->bind_param('ii', $userId, $limit);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stories = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-    return $stories;
-}
-
 function addLike($postId, $userId) {
     global $mysqli;
     $stmt = $mysqli->prepare("INSERT IGNORE INTO likes (post_id, user_id, created_at) VALUES (?, ?, NOW())");
@@ -104,7 +87,7 @@ function addComment($postId, $userId, $message) {
 
 function getUser($id) {
     global $mysqli;
-    $stmt = $mysqli->prepare("SELECT id, username, avatar FROM users WHERE id = ? LIMIT 1");
+    $stmt = $mysqli->prepare("SELECT id, username, avatar, bio FROM users WHERE id = ? LIMIT 1");
     $stmt->bind_param('i', $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -113,27 +96,10 @@ function getUser($id) {
     return $user;
 }
 
-function getStories($limit = 10) {
+function updateBio($userId, $bio) {
     global $mysqli;
-    $sql = "SELECT s.id, s.image_url, s.created_at, s.expires_at, u.username, u.avatar
-            FROM stories s
-            JOIN users u ON s.user_id = u.id
-            WHERE s.expires_at > NOW()
-            ORDER BY s.created_at DESC
-            LIMIT ?";
-    $stmt = $mysqli->prepare($sql);
-    $stmt->bind_param('i', $limit);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stories = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-    return $stories;
-}
-
-function addStory($userId, $imageUrl = null) {
-    global $mysqli;
-    $stmt = $mysqli->prepare("INSERT INTO stories (user_id, image_url) VALUES (?, ?)");
-    $stmt->bind_param('is', $userId, $imageUrl);
+    $stmt = $mysqli->prepare("UPDATE users SET bio = ? WHERE id = ?");
+    $stmt->bind_param('si', $bio, $userId);
     $stmt->execute();
     $stmt->close();
 }

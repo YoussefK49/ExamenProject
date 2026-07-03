@@ -7,14 +7,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
     $action = $_POST['action'];
     $userId = getCurrentUserId();
 
-    if ($action === 'create_story') {
-        addStory($userId);
+    if ($action === 'create_post' && !empty(trim($_POST['caption']))) {
+        createPost($userId, trim($_POST['caption']));
         header('Location: profile.php');
         exit;
     }
 
-    if ($action === 'create_post' && !empty(trim($_POST['caption']))) {
-        createPost($userId, trim($_POST['caption']));
+    if ($action === 'update_bio') {
+        updateBio($userId, trim($_POST['bio']));
         header('Location: profile.php');
         exit;
     }
@@ -22,13 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 
 $user = null;
 $posts = [];
-$stories = [];
 
 if (isLoggedIn()) {
     $userId = getCurrentUserId();
     $user = getUser($userId);
     $posts = getPostsByUser($userId, 20);
-    $stories = getStoriesByUser($userId, 10);
 }
 ?>
 <!DOCTYPE html>
@@ -121,12 +119,14 @@ if (isLoggedIn()) {
       <div class="profile-info">
         <h1><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></h1>
         <p><?php echo count($posts); ?> posts</p>
+        <?php if (!empty($user['bio'])): ?>
+        <p class="profile-bio"><?php echo htmlspecialchars($user['bio'], ENT_QUOTES, 'UTF-8'); ?></p>
+        <?php endif; ?>
       </div>
     </div>
 
-    <div class="profile-tabs">
-      <button class="tab-btn active">Posts</button>
-      <button class="tab-btn">Stories</button>
+    <div class="profile-bio-edit">
+      <button class="btn-secondary" onclick="document.getElementById('bioModal').style.display='flex'">Bio bewerken</button>
     </div>
 
     <div class="profile-content">
@@ -199,6 +199,21 @@ if (isLoggedIn()) {
         <input type="hidden" name="action" value="create_post" />
         <textarea name="caption" placeholder="Wat wil je delen?" required></textarea>
         <button type="submit" class="modal-submit">Post Plaatsen</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bio Modal -->
+  <div id="bioModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Bio Bewerken</h2>
+        <button class="modal-close" onclick="document.getElementById('bioModal').style.display='none'">×</button>
+      </div>
+      <form method="post" class="modal-form">
+        <input type="hidden" name="action" value="update_bio" />
+        <textarea name="bio" placeholder="Vertel iets over jezelf..." maxlength="150"><?php echo isset($user['bio']) ? htmlspecialchars($user['bio'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
+        <button type="submit" class="modal-submit">Opslaan</button>
       </form>
     </div>
   </div>
@@ -288,6 +303,14 @@ if (isLoggedIn()) {
     }
     .profile-info p {
       color: var(--muted);
+    }
+    .profile-bio {
+      margin-top: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .profile-bio-edit {
+      margin-bottom: 24px;
     }
     .profile-tabs {
       display: flex;

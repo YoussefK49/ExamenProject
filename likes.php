@@ -4,6 +4,24 @@ require_once 'auth.php';
 
 requireLogin();
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
+    $action = $_POST['action'];
+    $userId = getCurrentUserId();
+    $postId = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
+
+    if ($action === 'like' && $postId > 0) {
+        toggleLike($postId, $userId);
+        header('Location: likes.php');
+        exit;
+    }
+
+    if ($action === 'comment' && $postId > 0 && !empty(trim($_POST['comment_text']))) {
+        addComment($postId, $userId, trim($_POST['comment_text']));
+        header('Location: likes.php');
+        exit;
+    }
+}
+
 $userId = getCurrentUserId();
 $likedPosts = getLikedPosts($userId, 20);
 ?>

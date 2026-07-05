@@ -77,6 +77,35 @@ function addLike($postId, $userId) {
     $stmt->close();
 }
 
+function removeLike($postId, $userId) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("DELETE FROM likes WHERE post_id = ? AND user_id = ?");
+    $stmt->bind_param('ii', $postId, $userId);
+    $stmt->execute();
+    $stmt->close();
+}
+
+function getPostLikeCount($postId) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("SELECT COUNT(*) AS count FROM likes WHERE post_id = ?");
+    $stmt->bind_param('i', $postId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    return (int) ($row['count'] ?? 0);
+}
+
+function toggleLike($postId, $userId) {
+    if (isLiked($postId, $userId)) {
+        removeLike($postId, $userId);
+        return false;
+    } else {
+        addLike($postId, $userId);
+        return true;
+    }
+}
+
 function addComment($postId, $userId, $message) {
     global $mysqli;
     $stmt = $mysqli->prepare("INSERT INTO comments (post_id, user_id, comment_text, created_at) VALUES (?, ?, ?, NOW())");

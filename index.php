@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
     $userId = getCurrentUserId();
 
     if ($action === 'like' && $postId > 0) {
-        addLike($postId, $userId);
+        toggleLike($postId, $userId);
         header('Location: index.php');
         exit;
     }

@@ -166,6 +166,7 @@ function isFollowing($followerId, $followingId) {
     return $exists;
 }
 
+<<<<<<< Updated upstream
 function searchUsers($query, $limit = 20) {
     global $mysqli;
     $query = trim($query);
@@ -188,4 +189,47 @@ function searchUsers($query, $limit = 20) {
     $users = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
     return $users;
+=======
+function getLikedPosts($userId, $limit = 20) {
+    global $mysqli;
+    $sql = "SELECT p.id, p.caption, p.image_url, p.created_at, u.username, u.avatar,
+        COALESCE(l.likes, 0) AS like_count,
+        COALESCE(c.comments, 0) AS comment_count,
+        l2.created_at AS liked_at
+        FROM likes l2
+        JOIN posts p ON l2.post_id = p.id
+        JOIN users u ON p.user_id = u.id
+        LEFT JOIN (
+            SELECT post_id, COUNT(*) AS likes
+            FROM likes
+            GROUP BY post_id
+        ) l ON l.post_id = p.id
+        LEFT JOIN (
+            SELECT post_id, COUNT(*) AS comments
+            FROM comments
+            GROUP BY post_id
+        ) c ON c.post_id = p.id
+        WHERE l2.user_id = ?
+        ORDER BY l2.created_at DESC
+        LIMIT ?";
+
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('ii', $userId, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $posts = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $posts;
+}
+
+function isLiked($postId, $userId) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("SELECT id FROM likes WHERE post_id = ? AND user_id = ? LIMIT 1");
+    $stmt->bind_param('ii', $postId, $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $exists = $result->num_rows > 0;
+    $stmt->close();
+    return $exists;
+>>>>>>> Stashed changes
 }

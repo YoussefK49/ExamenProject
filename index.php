@@ -42,6 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 }
 
 $posts = getPosts(10);
+<<<<<<< Updated upstream
+=======
+$stories = getStories(10);
+$userId = getCurrentUserId();
+>>>>>>> Stashed changes
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -94,6 +99,11 @@ $posts = getPosts(10);
         </svg>
       </button>
       <?php if (isLoggedIn()): ?>
+      <a href="likes.php" class="nav-icon" aria-label="Geliked">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </a>
       <button class="nav-icon profile-btn" aria-label="Profiel" onclick="window.location.href='profile.php'">
         <div class="profile-avatar-small"></div>
       </button>
@@ -137,8 +147,8 @@ $posts = getPosts(10);
             <form method="post" class="like-form">
               <input type="hidden" name="action" value="like" />
               <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
-              <button class="action-btn like-button" type="submit" aria-label="Like">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button class="action-btn like-button <?php echo isLiked($post['id'], $userId) ? 'liked' : ''; ?>" type="submit" aria-label="Like">
+                <svg viewBox="0 0 24 24" fill="<?php echo isLiked($post['id'], $userId) ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                 </svg>
               </button>

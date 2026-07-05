@@ -12,12 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
         header('Location: profile.php');
         exit;
     }
-
-    if ($action === 'update_bio') {
-        updateBio($userId, trim($_POST['bio']));
-        header('Location: profile.php');
-        exit;
-    }
 }
 
 $user = null;
@@ -136,14 +130,7 @@ if ($viewUserId > 0) {
       <div class="profile-info">
         <h1><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></h1>
         <p><?php echo count($posts); ?> posts</p>
-        <?php if (!empty($user['bio'])): ?>
-        <p class="profile-bio"><?php echo htmlspecialchars($user['bio'], ENT_QUOTES, 'UTF-8'); ?></p>
-        <?php endif; ?>
       </div>
-    </div>
-
-    <div class="profile-bio-edit">
-      <button class="btn-secondary" onclick="document.getElementById('bioModal').style.display='flex'">Bio bewerken</button>
     </div>
 
     <div class="profile-content">
@@ -218,21 +205,6 @@ if ($viewUserId > 0) {
         <input type="hidden" name="action" value="create_post" />
         <textarea name="caption" placeholder="Wat wil je delen?" required></textarea>
         <button type="submit" class="modal-submit">Post Plaatsen</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Bio Modal -->
-  <div id="bioModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Bio Bewerken</h2>
-        <button class="modal-close" onclick="document.getElementById('bioModal').style.display='none'">×</button>
-      </div>
-      <form method="post" class="modal-form">
-        <input type="hidden" name="action" value="update_bio" />
-        <textarea name="bio" placeholder="Vertel iets over jezelf..." maxlength="150"><?php echo isset($user['bio']) ? htmlspecialchars($user['bio'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
-        <button type="submit" class="modal-submit">Opslaan</button>
       </form>
     </div>
   </div>

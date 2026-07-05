@@ -23,6 +23,12 @@ while ($mysqli->more_results() && $mysqli->next_result()) {
     // flush multi query results
 }
 
+// Add bio column if it doesn't exist
+$checkBio = $mysqli->query("SHOW COLUMNS FROM users LIKE 'bio'");
+if ($checkBio->num_rows == 0) {
+    $mysqli->query("ALTER TABLE users ADD COLUMN bio TEXT DEFAULT NULL");
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="nl">

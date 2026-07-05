@@ -87,7 +87,7 @@ function addComment($postId, $userId, $message) {
 
 function getUser($id) {
     global $mysqli;
-    $stmt = $mysqli->prepare("SELECT id, username, avatar, bio FROM users WHERE id = ? LIMIT 1");
+    $stmt = $mysqli->prepare("SELECT id, username, avatar FROM users WHERE id = ? LIMIT 1");
     $stmt->bind_param('i', $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -136,14 +136,6 @@ function getStoriesByUser($userId, $limit = 10) {
     $stories = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
     return $stories;
-}
-
-function updateBio($userId, $bio) {
-    global $mysqli;
-    $stmt = $mysqli->prepare("UPDATE users SET bio = ? WHERE id = ?");
-    $stmt->bind_param('si', $bio, $userId);
-    $stmt->execute();
-    $stmt->close();
 }
 
 function createPost($userId, $caption, $imageUrl = null) {

@@ -22,12 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 
 $user = null;
 $posts = [];
-<<<<<<< HEAD
 $stories = [];
 $isOwnProfile = false;
 $viewUserId = isset($_GET['user_id']) ? (int) $_GET['user_id'] : 0;
-=======
->>>>>>> origin/main
 
 if ($viewUserId > 0) {
     $user = getUser($viewUserId);
@@ -40,11 +37,8 @@ if ($viewUserId > 0) {
     $userId = getCurrentUserId();
     $user = getUser($userId);
     $posts = getPostsByUser($userId, 20);
-<<<<<<< HEAD
     $stories = getStoriesByUser($userId, 10);
     $isOwnProfile = true;
-=======
->>>>>>> origin/main
 }
 ?>
 <!DOCTYPE html>

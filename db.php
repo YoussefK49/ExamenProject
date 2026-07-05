@@ -96,6 +96,48 @@ function getUser($id) {
     return $user;
 }
 
+function getStories($limit = 10) {
+    global $mysqli;
+    $sql = "SELECT s.id, s.image_url, s.created_at, s.expires_at, u.username, u.avatar
+            FROM stories s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.expires_at > NOW()
+            ORDER BY s.created_at DESC
+            LIMIT ?";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('i', $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stories = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $stories;
+}
+
+function addStory($userId, $imageUrl = null) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("INSERT INTO stories (user_id, image_url) VALUES (?, ?)");
+    $stmt->bind_param('is', $userId, $imageUrl);
+    $stmt->execute();
+    $stmt->close();
+}
+
+function getStoriesByUser($userId, $limit = 10) {
+    global $mysqli;
+    $sql = "SELECT s.id, s.image_url, s.created_at, s.expires_at, u.username, u.avatar
+            FROM stories s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.user_id = ? AND s.expires_at > NOW()
+            ORDER BY s.created_at DESC
+            LIMIT ?";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('ii', $userId, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stories = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $stories;
+}
+
 function updateBio($userId, $bio) {
     global $mysqli;
     $stmt = $mysqli->prepare("UPDATE users SET bio = ? WHERE id = ?");
@@ -166,7 +208,6 @@ function isFollowing($followerId, $followingId) {
     return $exists;
 }
 
-<<<<<<< Updated upstream
 function searchUsers($query, $limit = 20) {
     global $mysqli;
     $query = trim($query);
@@ -189,7 +230,8 @@ function searchUsers($query, $limit = 20) {
     $users = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
     return $users;
-=======
+}
+
 function getLikedPosts($userId, $limit = 20) {
     global $mysqli;
     $sql = "SELECT p.id, p.caption, p.image_url, p.created_at, u.username, u.avatar,
@@ -231,5 +273,4 @@ function isLiked($postId, $userId) {
     $exists = $result->num_rows > 0;
     $stmt->close();
     return $exists;
->>>>>>> Stashed changes
 }

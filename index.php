@@ -42,11 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 }
 
 $posts = getPosts(10);
-<<<<<<< Updated upstream
-=======
 $stories = getStories(10);
 $userId = getCurrentUserId();
->>>>>>> Stashed changes
 ?>
 <!DOCTYPE html>
 <html lang="nl">

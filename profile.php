@@ -111,7 +111,9 @@ if ($viewUserId > 0) {
       </button>
       <?php endif; ?>
       <button class="nav-icon profile-btn" aria-label="Profiel">
-        <div class="profile-avatar-small"></div>
+        <div class="profile-avatar-small" style="--avatar-color: <?php echo isLoggedIn() ? getAvatarColor($_SESSION['username']) : getAvatarColor('guest'); ?>;">
+          <?php echo isLoggedIn() ? htmlspecialchars(strtoupper(mb_substr($_SESSION['username'], 0, 1)), ENT_QUOTES, 'UTF-8') : '?'; ?>
+        </div>
       </button>
       <button id="menuToggle" class="nav-icon" aria-label="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -186,7 +188,7 @@ if ($viewUserId > 0) {
     </div>
     <?php elseif ($user): ?>
     <div class="profile-header">
-      <div class="profile-avatar-large"><?php echo htmlspecialchars(strtoupper(mb_substr($user['username'], 0, 1)), ENT_QUOTES, 'UTF-8'); ?></div>
+      <div class="profile-avatar-large" style="--avatar-color: <?php echo getAvatarColor($user['username']); ?>;"><?php echo htmlspecialchars(strtoupper(mb_substr($user['username'], 0, 1)), ENT_QUOTES, 'UTF-8'); ?></div>
       <div class="profile-info">
         <h1><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></h1>
         <p><?php echo count($posts); ?> posts · <?php echo getFollowersCount($user['id']); ?> volgers · <?php echo getFollowingCount($user['id']); ?> volgend</p>

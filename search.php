@@ -79,7 +79,9 @@ $currentUserId = getCurrentUserId();
       </button>
       <?php if (isLoggedIn()): ?>
       <button class="nav-icon profile-btn" aria-label="Profiel" onclick="window.location.href='profile.php'">
-        <div class="profile-avatar-small"></div>
+        <div class="profile-avatar-small" style="--avatar-color: <?php echo getAvatarColor($_SESSION['username']); ?>;">
+          <?php echo htmlspecialchars(strtoupper(mb_substr($_SESSION['username'], 0, 1)), ENT_QUOTES, 'UTF-8'); ?>
+        </div>
       </button>
       <?php else: ?>
       <a href="login.php" class="nav-icon" style="text-decoration: none; color: var(--text); font-weight: 600; font-size: 14px; display: flex; align-items: center;">Inloggen</a>
@@ -145,7 +147,7 @@ $currentUserId = getCurrentUserId();
       ?>
       <div class="search-result-item">
         <a href="profile.php?user_id=<?php echo (int) $account['id']; ?>" class="search-result-link">
-          <div class="search-result-avatar"><?php echo htmlspecialchars($initial, ENT_QUOTES, 'UTF-8'); ?></div>
+          <div class="search-result-avatar" style="--avatar-color: <?php echo getAvatarColor($account['username']); ?>;"><?php echo htmlspecialchars($initial, ENT_QUOTES, 'UTF-8'); ?></div>
           <div class="search-result-info">
             <span class="search-result-username"><?php echo htmlspecialchars($account['username'], ENT_QUOTES, 'UTF-8'); ?></span>
             <span class="search-result-meta">

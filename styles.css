@@ -149,6 +149,35 @@ a {
   height: 24px;
   border-radius: 50%;
   background: var(--avatar-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.profile-avatar-small[data-color] {
+  background: var(--avatar-color, var(--avatar-gradient));
+}
+
+.profile-avatar-large {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: var(--avatar-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 64px;
+  text-transform: uppercase;
+}
+
+.profile-avatar-large[data-color] {
+  background: var(--avatar-color, var(--avatar-gradient));
 }
 
 /* Main Container */
@@ -198,6 +227,11 @@ a {
   justify-content: center;
   font-weight: 600;
   font-size: 14px;
+  text-transform: uppercase;
+}
+
+.post-avatar[data-color] {
+  background: var(--avatar-color, var(--avatar-gradient));
 }
 
 .post-user-info {
@@ -391,6 +425,17 @@ a {
   height: 56px;
   border-radius: 50%;
   background: var(--avatar-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 24px;
+  text-transform: uppercase;
+}
+
+.sidebar-avatar[data-color] {
+  background: var(--avatar-color, var(--avatar-gradient));
 }
 
 .sidebar-info {
@@ -456,6 +501,11 @@ a {
   justify-content: center;
   font-weight: 600;
   font-size: 14px;
+  text-transform: uppercase;
+}
+
+.suggestion-avatar[data-color] {
+  background: var(--avatar-color, var(--avatar-gradient));
 }
 
 .suggestion-info {
@@ -527,6 +577,17 @@ a {
   height: 24px;
   border-radius: 50%;
   background: var(--avatar-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.mobile-avatar[data-color] {
+  background: var(--avatar-color, var(--avatar-gradient));
 }
 
 /* Responsive */
@@ -793,14 +854,18 @@ a {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--story-gradient);
+  background: var(--avatar-gradient);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 18px;
-  flex-shrink: 0;
+  font-weight: 600;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.search-result-avatar[data-color] {
+  background: var(--avatar-color, var(--avatar-gradient));
 }
 
 .search-result-info {

@@ -31,6 +31,36 @@ function ensureDatabaseSchema() {
 
 ensureDatabaseSchema();
 
+function getAvatarColor($username) {
+    $colors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
+        '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+        '#F8B500', '#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9',
+        '#92A8D1', '#955251', '#B565A7', '#009B77', '#DD4124'
+    ];
+    $hash = crc32($username);
+    $index = abs($hash) % count($colors);
+    return $colors[$index];
+}
+
+function getSuggestedUsers($currentUserId, $limit = 3) {
+    global $mysqli;
+    $sql = "SELECT u.id, u.username, u.avatar, 
+            (SELECT COUNT(*) FROM posts WHERE user_id = u.id) as post_count
+            FROM users u
+            WHERE u.id != ? 
+            AND u.id NOT IN (SELECT following_id FROM follows WHERE follower_id = ?)
+            ORDER BY RAND()
+            LIMIT ?";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('iii', $currentUserId, $currentUserId, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $users = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $users;
+}
+
 function getPosts($limit = 10) {
     global $mysqli;
     $sql = "SELECT p.id, p.caption, p.image_url, p.created_at, u.username, u.avatar,

@@ -71,7 +71,9 @@ $likedPosts = getLikedPosts($userId, 20);
         </svg>
       </button>
       <button class="nav-icon profile-btn" aria-label="Profiel" onclick="window.location.href='profile.php'">
-        <div class="profile-avatar-small"></div>
+        <div class="profile-avatar-small" style="--avatar-color: <?php echo getAvatarColor($_SESSION['username']); ?>;">
+          <?php echo htmlspecialchars(strtoupper(mb_substr($_SESSION['username'], 0, 1)), ENT_QUOTES, 'UTF-8'); ?>
+        </div>
       </button>
       <button id="menuToggle" class="nav-icon" aria-label="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

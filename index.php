@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 $posts = getPosts(10);
 $stories = getStories(10);
 $userId = getCurrentUserId();
+$suggestedUsers = isLoggedIn() ? getSuggestedUsers($userId, 3) : [];
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -93,7 +94,9 @@ $userId = getCurrentUserId();
       </button>
       <?php endif; ?>
       <button class="nav-icon profile-btn" aria-label="Profiel" onclick="window.location.href='profile.php'">
-        <div class="profile-avatar-small"></div>
+        <div class="profile-avatar-small" style="--avatar-color: <?php echo isLoggedIn() ? getAvatarColor($_SESSION['username']) : getAvatarColor('guest'); ?>;">
+          <?php echo isLoggedIn() ? htmlspecialchars(strtoupper(mb_substr($_SESSION['username'], 0, 1)), ENT_QUOTES, 'UTF-8') : '?'; ?>
+        </div>
       </button>
       <button id="menuToggle" class="nav-icon" aria-label="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -149,7 +152,9 @@ $userId = getCurrentUserId();
       <article class="post-card">
         <div class="post-header">
           <div class="post-user">
-            <div class="post-avatar"></div>
+            <div class="post-avatar" style="--avatar-color: <?php echo getAvatarColor($post['username']); ?>;">
+              <?php echo htmlspecialchars(strtoupper(mb_substr($post['username'], 0, 1)), ENT_QUOTES, 'UTF-8'); ?>
+            </div>
             <div class="post-user-info">
               <span class="post-username"><?php echo htmlspecialchars($post['username'], ENT_QUOTES, 'UTF-8'); ?></span>
               <span class="post-location"><?php echo date('d M Y', strtotime($post['created_at'])); ?></span>
@@ -244,54 +249,37 @@ $userId = getCurrentUserId();
           <span>Suggesties voor jou</span>
           <a href="#">Alles zien</a>
         </div>
+        <?php if (empty($suggestedUsers)): ?>
         <div class="suggestion-item">
-          <div class="suggestion-avatar">N</div>
           <div class="suggestion-info">
-            <span class="suggestion-username">nieuwe_user</span>
-            <span class="suggestion-reason">Nieuw op Instant</span>
+            <span class="suggestion-username">Geen suggesties</span>
+            <span class="suggestion-reason">Volg meer mensen om suggesties te zien</span>
+          </div>
+        </div>
+        <?php else: ?>
+        <?php foreach ($suggestedUsers as $suggestedUser): ?>
+        <?php
+          $initial = strtoupper(mb_substr($suggestedUser['username'], 0, 1));
+          $postCount = (int) $suggestedUser['post_count'];
+        ?>
+        <div class="suggestion-item">
+          <div class="suggestion-avatar" style="--avatar-color: <?php echo getAvatarColor($suggestedUser['username']); ?>;"><?php echo htmlspecialchars($initial, ENT_QUOTES, 'UTF-8'); ?></div>
+          <div class="suggestion-info">
+            <span class="suggestion-username"><?php echo htmlspecialchars($suggestedUser['username'], ENT_QUOTES, 'UTF-8'); ?></span>
+            <span class="suggestion-reason"><?php echo $postCount; ?> posts</span>
           </div>
           <?php if (isLoggedIn()): ?>
           <form method="post" style="display: inline;">
             <input type="hidden" name="action" value="follow" />
-            <input type="hidden" name="following_id" value="2" />
+            <input type="hidden" name="following_id" value="<?php echo (int) $suggestedUser['id']; ?>" />
             <button type="submit" class="follow-btn">Volgen</button>
           </form>
           <?php else: ?>
           <button class="follow-btn" onclick="window.location.href='login.php'">Volgen</button>
           <?php endif; ?>
         </div>
-        <div class="suggestion-item">
-          <div class="suggestion-avatar">A</div>
-          <div class="suggestion-info">
-            <span class="suggestion-username">anna_design</span>
-            <span class="suggestion-reason">Gevolgd door peter</span>
-          </div>
-          <?php if (isLoggedIn()): ?>
-          <form method="post" style="display: inline;">
-            <input type="hidden" name="action" value="follow" />
-            <input type="hidden" name="following_id" value="3" />
-            <button type="submit" class="follow-btn">Volgen</button>
-          </form>
-          <?php else: ?>
-          <button class="follow-btn" onclick="window.location.href='login.php'">Volgen</button>
-          <?php endif; ?>
-        </div>
-        <div class="suggestion-item">
-          <div class="suggestion-avatar">T</div>
-          <div class="suggestion-info">
-            <span class="suggestion-username">tech_daily</span>
-            <span class="suggestion-reason">Populair</span>
-          </div>
-          <?php if (isLoggedIn()): ?>
-          <form method="post" style="display: inline;">
-            <input type="hidden" name="action" value="follow" />
-            <input type="hidden" name="following_id" value="4" />
-            <button type="submit" class="follow-btn">Volgen</button>
-          </form>
-          <?php else: ?>
-          <button class="follow-btn" onclick="window.location.href='login.php'">Volgen</button>
-          <?php endif; ?>
-        </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
       </div>
       <div class="sidebar-footer">
         <p>Over · Help · Pers · API · Vacatures · Privacy · Voorwaarden · Locaties · Taal</p>

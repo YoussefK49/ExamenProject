@@ -27,6 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
         header('Location: profile.php');
         exit;
     }
+
+    if ($action === 'follow' && !empty($_POST['following_id'])) {
+        $followingId = (int) $_POST['following_id'];
+        followUser($userId, $followingId);
+        header('Location: profile.php?user_id=' . $followingId);
+        exit;
+    }
+
+    if ($action === 'unfollow' && !empty($_POST['following_id'])) {
+        $followingId = (int) $_POST['following_id'];
+        unfollowUser($userId, $followingId);
+        header('Location: profile.php?user_id=' . $followingId);
+        exit;
+    }
 }
 
 $user = null;
@@ -39,14 +53,13 @@ if ($viewUserId > 0) {
     $user = getUser($viewUserId);
     if ($user) {
         $posts = getPostsByUser($viewUserId, 20);
-        $stories = getStoriesByUser($viewUserId, 10);
         $isOwnProfile = isLoggedIn() && getCurrentUserId() === $viewUserId;
     }
 } elseif (isLoggedIn()) {
-    $currentUserId = getCurrentUserId();
-    $user = getUser($currentUserId);
-    $posts = getPostsByUser($currentUserId, 20);
-    $stories = getStoriesByUser($currentUserId, 10);
+    $userId = getCurrentUserId();
+    $user = getUser($userId);
+    $posts = getPostsByUser($userId, 20);
+    $stories = getStoriesByUser($userId, 10);
     $isOwnProfile = true;
 }
 ?>
@@ -100,7 +113,28 @@ if ($viewUserId > 0) {
       <button class="nav-icon profile-btn" aria-label="Profiel">
         <div class="profile-avatar-small"></div>
       </button>
-      <button id="themeToggle" class="nav-icon" aria-label="Wissel thema">
+      <button id="menuToggle" class="nav-icon" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hamburger Menu -->
+  <div id="hamburgerMenu" class="hamburger-menu" style="display: none;">
+    <div class="hamburger-menu-content">
+      <button class="hamburger-menu-close" onclick="document.getElementById('hamburgerMenu').style.display='none'">×</button>
+      <a href="settings.php" class="hamburger-menu-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Settings
+      </a>
+      <button id="themeToggleMenu" class="hamburger-menu-item">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="5"/>
           <line x1="12" y1="1" x2="12" y2="3"/>
@@ -112,9 +146,20 @@ if ($viewUserId > 0) {
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
         </svg>
+        Uiterlijk wisselen
       </button>
+      <?php if (isLoggedIn()): ?>
+      <a href="logout.php" class="hamburger-menu-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Uitloggen
+      </a>
+      <?php endif; ?>
     </div>
-  </header>
+  </div>
 
   <main class="main-container">
     <?php if ($viewUserId > 0 && !$user): ?>
@@ -144,11 +189,38 @@ if ($viewUserId > 0) {
       <div class="profile-avatar-large"><?php echo htmlspecialchars(strtoupper(mb_substr($user['username'], 0, 1)), ENT_QUOTES, 'UTF-8'); ?></div>
       <div class="profile-info">
         <h1><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></h1>
-        <p><?php echo count($posts); ?> posts</p>
+        <p><?php echo count($posts); ?> posts · <?php echo getFollowersCount($user['id']); ?> volgers · <?php echo getFollowingCount($user['id']); ?> volgend</p>
+        <?php if (!$isOwnProfile && isLoggedIn()): ?>
+        <div style="margin-top: 8px; text-align: right;">
+        <?php if (isFollowing($currentUserId, $user['id'])): ?>
+        <form method="post" style="display: inline;">
+          <input type="hidden" name="action" value="unfollow" />
+          <input type="hidden" name="following_id" value="<?php echo (int)$user['id']; ?>" />
+          <button type="submit" class="btn-primary" style="background: #6b7280; padding: 8px 16px; font-size: 14px;">Ontvolgen</button>
+        </form>
+        <?php else: ?>
+        <form method="post" style="display: inline;">
+          <input type="hidden" name="action" value="follow" />
+          <input type="hidden" name="following_id" value="<?php echo (int)$user['id']; ?>" />
+          <button type="submit" class="btn-primary" style="padding: 8px 16px; font-size: 14px;">Volgen</button>
+        </form>
+        <?php endif; ?>
+        </div>
+        <?php endif; ?>
       </div>
     </div>
 
+    <div class="profile-bio-edit">
+      <button class="btn-secondary" onclick="document.getElementById('bioModal').style.display='flex'">Bio bewerken</button>
+    </div>
+
+    <div class="profile-tabs">
+      <button class="tab-btn active" onclick="showTab('posts')">Posts</button>
+      <button class="tab-btn" onclick="showTab('liked')">Geliked</button>
+    </div>
+
     <div class="profile-content">
+      <div id="posts-tab">
       <?php if (empty($posts)): ?>
       <div class="empty-state">
         <p><?php echo $isOwnProfile ? 'Nog geen posts. Plaats je eerste post!' : 'Deze gebruiker heeft nog geen posts.'; ?></p>
@@ -214,6 +286,75 @@ if ($viewUserId > 0) {
         <?php endforeach; ?>
       </div>
       <?php endif; ?>
+      </div>
+      <div id="liked-tab" style="display: none;">
+        <?php
+        $likedPosts = getLikedPosts($user['id'], 20);
+        if (empty($likedPosts)):
+        ?>
+        <div class="empty-state">
+          <p><?php echo $isOwnProfile ? 'Je hebt nog geen posts geliked' : 'Deze gebruiker heeft nog geen posts geliked'; ?></p>
+        </div>
+        <?php else: ?>
+        <div class="profile-posts">
+          <?php foreach ($likedPosts as $post): ?>
+          <article class="post-card">
+            <div class="post-header">
+              <div class="post-user">
+                <div class="post-avatar"></div>
+                <div class="post-user-info">
+                  <span class="post-username"><?php echo htmlspecialchars($post['username'], ENT_QUOTES, 'UTF-8'); ?></span>
+                  <span class="post-location"><?php echo date('d M Y', strtotime($post['created_at'])); ?></span>
+                </div>
+              </div>
+            </div>
+            <div class="post-image image-gradient"></div>
+            <div class="post-actions">
+              <div class="post-actions-left">
+                <?php $isPostLiked = isLoggedIn() && isLiked($post['id'], $currentUserId); ?>
+                <?php if (isLoggedIn()): ?>
+                <form method="post" class="like-form">
+                  <input type="hidden" name="action" value="like" />
+                  <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
+                  <button class="action-btn like-button <?php echo $isPostLiked ? 'liked' : ''; ?>" type="submit" aria-label="Like">
+                    <svg viewBox="0 0 24 24" fill="<?php echo $isPostLiked ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </button>
+                </form>
+                <?php else: ?>
+                <button class="action-btn like-button" type="button" onclick="window.location.href='login.php'" aria-label="Like">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                </button>
+                <?php endif; ?>
+                <button class="action-btn comment-btn" data-target="comment_text_<?php echo (int)$post['id']; ?>" aria-label="Reactie">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="post-info">
+              <p class="post-likes"><?php echo (int)$post['like_count']; ?> vind-ik-leuks</p>
+              <p class="post-caption">
+                <span class="caption-username"><?php echo htmlspecialchars($post['username'], ENT_QUOTES, 'UTF-8'); ?></span>
+                <?php echo htmlspecialchars($post['caption'], ENT_QUOTES, 'UTF-8'); ?>
+              </p>
+              <p class="post-comments"><?php echo (int)$post['comment_count']; ?> reacties</p>
+            </div>
+            <form method="post" class="comment-form" style="margin-top: 16px;">
+              <input type="hidden" name="action" value="comment" />
+              <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
+              <input id="comment_text_<?php echo (int)$post['id']; ?>" type="text" name="comment_text" placeholder="Reactie toevoegen..." required />
+              <button type="submit">Plaatsen</button>
+            </form>
+          </article>
+          <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+      </div>
     </div>
     <?php endif; ?>
   </main>
@@ -238,6 +379,25 @@ if ($viewUserId > 0) {
       if (event.target.classList.contains('modal')) {
         event.target.style.display = 'none';
       }
+    }
+
+    document.getElementById('menuToggle').onclick = function() {
+      document.getElementById('hamburgerMenu').style.display = 'flex';
+    }
+
+    document.getElementById('themeToggleMenu').onclick = function() {
+      document.getElementById('hamburgerMenu').style.display = 'none';
+    }
+
+    function showTab(tabName) {
+      document.getElementById('posts-tab').style.display = tabName === 'posts' ? 'block' : 'none';
+      document.getElementById('liked-tab').style.display = tabName === 'liked' ? 'block' : 'none';
+      
+      var tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach(function(tab) {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
     }
   </script>
 
@@ -360,6 +520,55 @@ if ($viewUserId > 0) {
       max-width: 470px;
       margin: 30px auto;
       padding: 0 20px;
+    }
+    .hamburger-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 280px;
+      height: 100vh;
+      background: var(--bg);
+      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      flex-direction: column;
+    }
+    .hamburger-menu-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .hamburger-menu-close {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 32px;
+      cursor: pointer;
+      color: var(--text);
+      padding: 0;
+      width: 40px;
+      height: 40px;
+    }
+    .hamburger-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      background: var(--border);
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .hamburger-menu-item:hover {
+      background: var(--muted);
+    }
+    .hamburger-menu-item svg {
+      width: 20px;
+      height: 20px;
     }
   </style>
 </body>

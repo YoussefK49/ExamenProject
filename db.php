@@ -10,6 +10,17 @@ if ($mysqli->connect_error) {
 }
 $mysqli->set_charset('utf8mb4');
 
+function ensureDatabaseSchema() {
+    global $mysqli;
+
+    $result = $mysqli->query("SHOW COLUMNS FROM users LIKE 'bio'");
+    if ($result && $result->num_rows === 0) {
+        $mysqli->query("ALTER TABLE users ADD COLUMN bio TEXT DEFAULT NULL AFTER avatar");
+    }
+}
+
+ensureDatabaseSchema();
+
 function getPosts($limit = 10) {
     global $mysqli;
     $sql = "SELECT p.id, p.caption, p.image_url, p.created_at, u.username, u.avatar,
@@ -227,6 +238,28 @@ function isFollowing($followerId, $followingId) {
     $exists = $result->num_rows > 0;
     $stmt->close();
     return $exists;
+}
+
+function getFollowersCount($userId) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("SELECT COUNT(*) as count FROM follows WHERE following_id = ?");
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    return (int)$row['count'];
+}
+
+function getFollowingCount($userId) {
+    global $mysqli;
+    $stmt = $mysqli->prepare("SELECT COUNT(*) as count FROM follows WHERE follower_id = ?");
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    return (int)$row['count'];
 }
 
 function searchUsers($query, $limit = 20) {

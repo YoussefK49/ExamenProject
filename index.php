@@ -295,7 +295,7 @@ $userId = getCurrentUserId();
       </div>
       <div class="sidebar-footer">
         <p>Over · Help · Pers · API · Vacatures · Privacy · Voorwaarden · Locaties · Taal</p>
-        <p>© 2024 INSTANT</p>
+        <p>© 2026 INSTANT</p>
       </div>
     </aside>
   </main>

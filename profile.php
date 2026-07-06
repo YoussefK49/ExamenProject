@@ -387,6 +387,9 @@ if ($viewUserId > 0) {
 
     document.getElementById('themeToggleMenu').onclick = function() {
       document.getElementById('hamburgerMenu').style.display = 'none';
+      const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.body.dataset.theme = nextTheme;
+      localStorage.setItem('instant-theme', nextTheme);
     }
 
     function showTab(tabName) {

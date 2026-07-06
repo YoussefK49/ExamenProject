@@ -21,6 +21,81 @@ if (themeToggle) {
   });
 }
 
+const menuToggle = document.getElementById('menuToggle');
+const menuClose = document.getElementById('menuClose');
+const mobileMenu = document.getElementById('mobileMenu');
+const profileDropdownToggle = document.getElementById('profileDropdownToggle');
+const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+
+function toggleMobileMenu(open) {
+  if (!mobileMenu) return;
+  mobileMenu.classList.toggle('open', open);
+  mobileMenu.setAttribute('aria-hidden', String(!open));
+}
+
+function toggleProfileDropdown(open) {
+  if (!profileDropdownMenu || !profileDropdownToggle) return;
+  profileDropdownMenu.classList.toggle('open', open);
+  profileDropdownToggle.setAttribute('aria-expanded', String(open));
+}
+
+if (menuToggle) {
+  menuToggle.addEventListener('click', () => toggleMobileMenu(true));
+}
+
+if (menuClose) {
+  menuClose.addEventListener('click', () => toggleMobileMenu(false));
+}
+
+if (profileDropdownToggle) {
+  profileDropdownToggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const open = !profileDropdownMenu.classList.contains('open');
+    toggleProfileDropdown(open);
+  });
+}
+
+if (mobileMenu) {
+  mobileMenu.addEventListener('click', (event) => {
+    if (event.target === mobileMenu) {
+      toggleMobileMenu(false);
+    }
+  });
+}
+
+const themeToggleSettings = document.getElementById('themeToggleSettings');
+
+if (themeToggleSettings) {
+  themeToggleSettings.addEventListener('click', () => {
+    const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+  });
+}
+
+document.addEventListener('click', (event) => {
+  if (event.target.classList.contains('modal')) {
+    event.target.style.display = 'none';
+  }
+
+  if (profileDropdownMenu && profileDropdownMenu.classList.contains('open')) {
+    const isDropdownClick = event.composedPath().includes(profileDropdownMenu) || event.composedPath().includes(profileDropdownToggle);
+    if (!isDropdownClick) {
+      toggleProfileDropdown(false);
+    }
+  }
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    if (mobileMenu && mobileMenu.classList.contains('open')) {
+      toggleMobileMenu(false);
+    }
+    if (profileDropdownMenu && profileDropdownMenu.classList.contains('open')) {
+      toggleProfileDropdown(false);
+    }
+  }
+});
+
 document.querySelectorAll('.comment-btn').forEach((button) => {
   button.addEventListener('click', () => {
     const targetId = button.dataset.target;

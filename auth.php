@@ -27,6 +27,14 @@ function getCurrentUser() {
     return getUser(getCurrentUserId());
 }
 
+function updateSession($user) {
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['email'] = $user['email'] ?? '';
+    $_SESSION['likes_public'] = $user['likes_public'] ?? 1;
+    $_SESSION['account_public'] = $user['account_public'] ?? 1;
+}
+
 function logout() {
     session_unset();
     session_destroy();

@@ -15,6 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
+            $_SESSION['email'] = $user['email'] ?? '';
+            $_SESSION['likes_public'] = $user['likes_public'] ?? 1;
+            $_SESSION['account_public'] = $user['account_public'] ?? 1;
             header('Location: index.php');
             exit;
         } else {

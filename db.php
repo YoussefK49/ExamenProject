@@ -17,6 +17,16 @@ function ensureDatabaseSchema() {
     if ($result && $result->num_rows === 0) {
         $mysqli->query("ALTER TABLE users ADD COLUMN bio TEXT DEFAULT NULL AFTER avatar");
     }
+
+    $result = $mysqli->query("SHOW COLUMNS FROM users LIKE 'likes_public'");
+    if ($result && $result->num_rows === 0) {
+        $mysqli->query("ALTER TABLE users ADD COLUMN likes_public TINYINT(1) DEFAULT 1 AFTER bio");
+    }
+
+    $result = $mysqli->query("SHOW COLUMNS FROM users LIKE 'account_public'");
+    if ($result && $result->num_rows === 0) {
+        $mysqli->query("ALTER TABLE users ADD COLUMN account_public TINYINT(1) DEFAULT 1 AFTER likes_public");
+    }
 }
 
 ensureDatabaseSchema();
@@ -127,7 +137,7 @@ function addComment($postId, $userId, $message) {
 
 function getUser($id) {
     global $mysqli;
-    $stmt = $mysqli->prepare("SELECT id, username, avatar FROM users WHERE id = ? LIMIT 1");
+    $stmt = $mysqli->prepare("SELECT id, username, email, avatar, bio, likes_public, account_public FROM users WHERE id = ? LIMIT 1");
     $stmt->bind_param('i', $id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -199,7 +209,7 @@ function registerUser($username, $email, $password) {
 
 function loginUser($username, $password) {
     global $mysqli;
-    $stmt = $mysqli->prepare("SELECT id, username, email, password_hash, avatar FROM users WHERE username = ? OR email = ? LIMIT 1");
+    $stmt = $mysqli->prepare("SELECT id, username, email, password_hash, avatar, likes_public, account_public FROM users WHERE username = ? OR email = ? LIMIT 1");
     $stmt->bind_param('ss', $username, $username);
     $stmt->execute();
     $result = $stmt->get_result();

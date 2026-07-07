@@ -27,6 +27,10 @@ if (isLoggedIn()) {
     $userId = getCurrentUserId();
     $user = getUser($userId);
     $posts = getPostsByUser($userId, 20);
+    foreach ($posts as &$post) {
+        $post['comments'] = getComments($post['id']);
+    }
+    unset($post);
 }
 ?>
 <!DOCTYPE html>
@@ -174,6 +178,16 @@ if (isLoggedIn()) {
               <?php echo htmlspecialchars($post['caption'], ENT_QUOTES, 'UTF-8'); ?>
             </p>
             <p class="post-comments"><?php echo (int)$post['comment_count']; ?> reacties</p>
+          </div>
+          <div class="post-comments-list">
+            <?php if (!empty($post['comments'])): ?>
+              <?php foreach ($post['comments'] as $comment): ?>
+                <div class="post-comment">
+                  <span class="comment-username"><?php echo htmlspecialchars($comment['username'], ENT_QUOTES, 'UTF-8'); ?></span>
+                  <span class="comment-text"><?php echo htmlspecialchars($comment['comment_text'], ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
           </div>
           <form method="post" class="comment-form">
             <input type="hidden" name="action" value="comment" />

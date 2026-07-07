@@ -165,6 +165,22 @@ function addComment($postId, $userId, $message) {
     $stmt->close();
 }
 
+function getComments($postId) {
+    global $mysqli;
+    $sql = "SELECT c.id, c.comment_text, c.created_at, u.username, u.avatar
+            FROM comments c
+            JOIN users u ON c.user_id = u.id
+            WHERE c.post_id = ?
+            ORDER BY c.created_at ASC";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('i', $postId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $comments = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $comments;
+}
+
 function getUser($id) {
     global $mysqli;
     $stmt = $mysqli->prepare("SELECT id, username, email, avatar, bio, likes_public, account_public FROM users WHERE id = ? LIMIT 1");

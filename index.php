@@ -29,6 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
 }
 
 $posts = getPosts(10);
+foreach ($posts as &$post) {
+    $post['comments'] = getComments($post['id']);
+}
+unset($post);
 $stories = getStories(10);
 $userId = getCurrentUserId();
 $suggestedUsers = isLoggedIn() ? getSuggestedUsers($userId, 3) : [];
@@ -108,6 +112,16 @@ $suggestedUsers = isLoggedIn() ? getSuggestedUsers($userId, 3) : [];
           </p>
           <p class="post-comments"><?php echo (int)$post['comment_count']; ?> reacties</p>
           <p class="post-time"><?php echo time_elapsed_string($post['created_at']); ?></p>
+        </div>
+        <div class="post-comments-list">
+          <?php if (!empty($post['comments'])): ?>
+            <?php foreach ($post['comments'] as $comment): ?>
+              <div class="post-comment">
+                <span class="comment-username"><?php echo htmlspecialchars($comment['username'], ENT_QUOTES, 'UTF-8'); ?></span>
+                <span class="comment-text"><?php echo htmlspecialchars($comment['comment_text'], ENT_QUOTES, 'UTF-8'); ?></span>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
         <?php if (isLoggedIn()): ?>
         <form method="post" class="comment-form">

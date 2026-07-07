@@ -2,7 +2,7 @@ const themeToggle = document.getElementById('themeToggle');
 const storedTheme = localStorage.getItem('instant-theme');
 
 function applyTheme(theme) {
-  document.body.dataset.theme = theme;
+  document.documentElement.dataset.theme = theme;
   localStorage.setItem('instant-theme', theme);
 }
 
@@ -16,7 +16,7 @@ if (storedTheme === 'dark' || storedTheme === 'light') {
 
 if (themeToggle) {
   themeToggle.addEventListener('click', () => {
-    const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     applyTheme(nextTheme);
   });
 }
@@ -26,6 +26,7 @@ const menuClose = document.getElementById('menuClose');
 const mobileMenu = document.getElementById('mobileMenu');
 const profileDropdownToggle = document.getElementById('profileDropdownToggle');
 const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+const dropdownThemeToggle = document.getElementById('dropdownThemeToggle');
 
 function toggleMobileMenu(open) {
   if (!mobileMenu) return;
@@ -55,6 +56,14 @@ if (profileDropdownToggle) {
   });
 }
 
+if (dropdownThemeToggle) {
+  dropdownThemeToggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+  });
+}
+
 if (mobileMenu) {
   mobileMenu.addEventListener('click', (event) => {
     if (event.target === mobileMenu) {
@@ -67,7 +76,7 @@ const themeToggleSettings = document.getElementById('themeToggleSettings');
 
 if (themeToggleSettings) {
   themeToggleSettings.addEventListener('click', () => {
-    const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     applyTheme(nextTheme);
   });
 }

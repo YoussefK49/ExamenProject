@@ -126,6 +126,7 @@ if ($viewUserId > 0) {
 
     <div class="profile-bio-edit">
       <button class="btn-secondary" onclick="document.getElementById('bioModal').style.display='flex'">Bio bewerken</button>
+      <a href="logout.php" class="btn-secondary logout-btn">Uitloggen</a>
     </div>
 
     <div class="profile-tabs">
@@ -363,29 +364,59 @@ if ($viewUserId > 0) {
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      background: var(--story-gradient);
+      background: var(--avatar-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: 700;
       font-size: 48px;
+      box-shadow: var(--shadow-lg);
     }
     .profile-info h1 {
       font-size: 32px;
       font-weight: 700;
       margin-bottom: 8px;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     .profile-info p {
       color: var(--muted);
     }
     .profile-bio {
-      margin-top: 8px;
+      margin-top: 12px;
       color: var(--text);
-      font-size: 14px;
+      font-size: 15px;
+      line-height: 1.6;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
     }
     .profile-bio-edit {
       margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+    }
+    .profile-bio-edit button,
+    .profile-bio-edit a {
+      padding: 10px 20px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+    .profile-bio-edit button:hover,
+    .profile-bio-edit a:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+    }
+    .logout-btn:hover {
+      background: #dc2626;
     }
     .profile-tabs {
       display: flex;

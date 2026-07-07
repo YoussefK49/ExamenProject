@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+<<<<<<< Updated upstream
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --bg: #f7f8fb;
   --surface: #ffffff;
@@ -29,7 +30,41 @@
   --danger: #f87171;
   --card: #111827;
   --shadow: rgba(15, 23, 42, 0.4);
+<<<<<<< HEAD
   color-scheme: dark;
+=======
+=======
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --brand: #6366f1;
+  --brand-hover: #4f46e5;
+  --card: #ffffff;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --avatar-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f0f0f;
+  --surface: #1a1a1a;
+  --text: #f5f5f5;
+  --muted: #9ca3af;
+  --border: #2d2d2d;
+  --brand: #818cf8;
+  --brand-hover: #a5b4fc;
+  --card: #1a1a1a;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+>>>>>>> Stashed changes
+>>>>>>> origin/main
 }
 
 * {
@@ -46,10 +81,16 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
+<<<<<<< Updated upstream
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 15px;
+=======
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+>>>>>>> Stashed changes
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 button,
@@ -80,12 +121,19 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+<<<<<<< Updated upstream
   gap: 16px;
   padding: 0 24px;
   min-height: 68px;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(14px);
+=======
+  padding: 0 24px;
+  height: 64px;
+  background: var(--surface);
+>>>>>>> Stashed changes
   border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 /* Dark navbar override when dark theme active */
@@ -121,11 +169,17 @@ a:hover {
 
 .search-input {
   width: 100%;
+<<<<<<< Updated upstream
   padding: 12px 14px 12px 42px;
   border-radius: 14px;
+=======
+  padding: 10px 16px 10px 40px;
+  border-radius: 12px;
+>>>>>>> Stashed changes
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
+<<<<<<< Updated upstream
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -133,6 +187,16 @@ a:hover {
   outline: none;
   border-color: var(--brand);
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+=======
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+>>>>>>> Stashed changes
 }
 
 .search-icon {
@@ -162,7 +226,9 @@ a:hover {
 }
 
 .nav-icon:hover {
-  color: var(--text);
+  color: var(--brand);
+  transform: scale(1.05);
+  transition: all 0.2s ease;
 }
 
 .nav-icon svg {
@@ -230,8 +296,19 @@ a:hover {
   justify-content: center;
   border-radius: 14px;
   border: 1px solid var(--border);
+<<<<<<< Updated upstream
   background: var(--surface);
+=======
+  border-radius: 16px;
+>>>>>>> Stashed changes
   overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.post-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .post-header {
@@ -296,8 +373,13 @@ a:hover {
   transition: transform 0.2s ease;
 }
 
+<<<<<<< Updated upstream
 .menu-toggle span:nth-child(1) {
   transform: translateY(-6px);
+=======
+.image-gradient {
+  background: var(--gradient-1);
+>>>>>>> Stashed changes
 }
 
 .menu-toggle span:nth-child(3) {
@@ -316,8 +398,15 @@ a:hover {
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
+<<<<<<< Updated upstream
 .profile-dropdown {
   position: relative;
+=======
+.action-btn:hover {
+  color: var(--brand);
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+>>>>>>> Stashed changes
 }
 
 .dropdown-menu {
@@ -446,6 +535,7 @@ a:hover {
   font-weight: 600;
 }
 
+<<<<<<< Updated upstream
 .sidebar-suggestions {
   margin-bottom: 24px;
 }
@@ -516,6 +606,8 @@ a:hover {
   font-weight: 600;
 }
 
+=======
+>>>>>>> Stashed changes
 .sidebar-footer {
   font-size: 12px;
   color: #c7c7c7;
@@ -907,9 +999,30 @@ a:hover {
 .modal-content {
   width: min(100%, 520px);
   background: var(--surface);
+<<<<<<< Updated upstream
   border-radius: 24px;
   overflow: hidden;
   box-shadow: var(--shadow);
+=======
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+>>>>>>> Stashed changes
 }
 
 .modal-header {
@@ -940,11 +1053,24 @@ a:hover {
 
 .modal-form textarea {
   min-height: 120px;
+<<<<<<< Updated upstream
   padding: 16px;
   border-radius: 18px;
   border: 1px solid var(--border);
   background: var(--surface-soft);
   resize: vertical;
+=======
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+  transition: all 0.2s ease;
+>>>>>>> Stashed changes
 }
 
 .modal-form textarea:focus,
@@ -954,14 +1080,15 @@ a:hover {
 
 .modal-form input {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--bg);
   color: var(--text);
   font-family: inherit;
   font-size: 14px;
   outline: none;
+  transition: all 0.2s ease;
 }
 
 .modal-form input:disabled {
@@ -979,16 +1106,19 @@ a:hover {
   background: var(--brand);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 14px 28px;
+  border-radius: 12px;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
 }
 
 .modal-submit:hover {
   background: var(--brand-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Search page */

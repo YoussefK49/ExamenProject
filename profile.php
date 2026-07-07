@@ -2,25 +2,10 @@
 require_once 'db.php';
 require_once 'auth.php';
 
-$currentUserId = isLoggedIn() ? getCurrentUserId() : null;
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
     requireLogin();
     $action = $_POST['action'];
     $userId = getCurrentUserId();
-    $postId = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-
-    if ($action === 'like' && $postId > 0) {
-        toggleLike($postId, $userId);
-        header('Location: profile.php');
-        exit;
-    }
-
-    if ($action === 'comment' && $postId > 0 && !empty(trim($_POST['comment_text']))) {
-        addComment($postId, $userId, trim($_POST['comment_text']));
-        header('Location: profile.php');
-        exit;
-    }
 
     if ($action === 'create_post' && !empty(trim($_POST['caption']))) {
         createPost($userId, trim($_POST['caption']));
@@ -28,39 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
         exit;
     }
 
-    if ($action === 'follow' && !empty($_POST['following_id'])) {
-        $followingId = (int) $_POST['following_id'];
-        followUser($userId, $followingId);
-        header('Location: profile.php?user_id=' . $followingId);
-        exit;
-    }
-
-    if ($action === 'unfollow' && !empty($_POST['following_id'])) {
-        $followingId = (int) $_POST['following_id'];
-        unfollowUser($userId, $followingId);
-        header('Location: profile.php?user_id=' . $followingId);
+    if ($action === 'update_bio') {
+        updateBio($userId, trim($_POST['bio']));
+        header('Location: profile.php');
         exit;
     }
 }
 
 $user = null;
 $posts = [];
-$stories = [];
-$isOwnProfile = false;
-$viewUserId = isset($_GET['user_id']) ? (int) $_GET['user_id'] : 0;
 
-if ($viewUserId > 0) {
-    $user = getUser($viewUserId);
-    if ($user) {
-        $posts = getPostsByUser($viewUserId, 20);
-        $isOwnProfile = isLoggedIn() && getCurrentUserId() === $viewUserId;
-    }
-} elseif (isLoggedIn()) {
+if (isLoggedIn()) {
     $userId = getCurrentUserId();
     $user = getUser($userId);
     $posts = getPostsByUser($userId, 20);
-    $stories = getStoriesByUser($userId, 10);
-    $isOwnProfile = true;
 }
 ?>
 <!DOCTYPE html>
@@ -74,14 +40,63 @@ if ($viewUserId > 0) {
   <script src="script.js" defer></script>
 </head>
 <body data-theme="light">
-  <?php include 'nav.php'; ?>
-  <main class="main-container">
-    <?php if ($viewUserId > 0 && !$user): ?>
-    <div class="empty-state">
-      <p>Account niet gevonden.</p>
-      <a href="search.php" class="btn-primary" style="margin-top: 16px; display: inline-block;">Terug naar zoeken</a>
+  <header class="navbar">
+    <div class="navbar-brand">
+      <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+      <span class="brand-text">Instant</span>
     </div>
-    <?php elseif (!$user && !isLoggedIn()): ?>
+    <div class="navbar-search">
+      <input type="text" placeholder="Zoek..." class="search-input">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </div>
+    <div class="navbar-icons">
+      <a href="index.php" class="nav-icon" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+      </a>
+      <button class="nav-icon" aria-label="Berichten">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
+      <?php if (isLoggedIn()): ?>
+      <button class="nav-icon" aria-label="Nieuwe post" onclick="document.getElementById('postModal').style.display='flex'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+      </button>
+      <?php endif; ?>
+      <button class="nav-icon profile-btn" aria-label="Profiel">
+        <div class="profile-avatar-small"></div>
+      </button>
+      <button id="themeToggle" class="nav-icon" aria-label="Wissel thema">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <?php if (!isLoggedIn()): ?>
     <div class="profile-guest">
       <div class="profile-guest-content">
         <div class="profile-guest-icon">
@@ -98,28 +113,14 @@ if ($viewUserId > 0) {
         </div>
       </div>
     </div>
-    <?php elseif ($user): ?>
+    <?php else: ?>
     <div class="profile-header">
-      <div class="profile-avatar-large" style="--avatar-color: <?php echo getAvatarColor($user['username']); ?>;"><?php echo htmlspecialchars(strtoupper(mb_substr($user['username'], 0, 1)), ENT_QUOTES, 'UTF-8'); ?></div>
+      <div class="profile-avatar-large"></div>
       <div class="profile-info">
         <h1><?php echo htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8'); ?></h1>
-        <p><?php echo count($posts); ?> posts · <?php echo getFollowersCount($user['id']); ?> volgers · <?php echo getFollowingCount($user['id']); ?> volgend</p>
-        <?php if (!$isOwnProfile && isLoggedIn()): ?>
-        <div style="margin-top: 8px; text-align: right;">
-        <?php if (isFollowing($currentUserId, $user['id'])): ?>
-        <form method="post" style="display: inline;">
-          <input type="hidden" name="action" value="unfollow" />
-          <input type="hidden" name="following_id" value="<?php echo (int)$user['id']; ?>" />
-          <button type="submit" class="btn-primary" style="background: #6b7280; padding: 8px 16px; font-size: 14px;">Ontvolgen</button>
-        </form>
-        <?php else: ?>
-        <form method="post" style="display: inline;">
-          <input type="hidden" name="action" value="follow" />
-          <input type="hidden" name="following_id" value="<?php echo (int)$user['id']; ?>" />
-          <button type="submit" class="btn-primary" style="padding: 8px 16px; font-size: 14px;">Volgen</button>
-        </form>
-        <?php endif; ?>
-        </div>
+        <p><?php echo count($posts); ?> posts</p>
+        <?php if (!empty($user['bio'])): ?>
+        <p class="profile-bio"><?php echo htmlspecialchars($user['bio'], ENT_QUOTES, 'UTF-8'); ?></p>
         <?php endif; ?>
       </div>
     </div>
@@ -129,16 +130,10 @@ if ($viewUserId > 0) {
       <a href="logout.php" class="btn-secondary logout-btn">Uitloggen</a>
     </div>
 
-    <div class="profile-tabs">
-      <button class="tab-btn active" onclick="showTab('posts', this)">Posts</button>
-      <button class="tab-btn" onclick="showTab('liked', this)">Geliked</button>
-    </div>
-
     <div class="profile-content">
-      <div id="posts-tab">
       <?php if (empty($posts)): ?>
       <div class="empty-state">
-        <p><?php echo $isOwnProfile ? 'Nog geen posts. Plaats je eerste post!' : 'Deze gebruiker heeft nog geen posts.'; ?></p>
+        <p>Nog geen posts. Plaats je eerste post!</p>
       </div>
       <?php else: ?>
       <div class="profile-posts">
@@ -156,24 +151,15 @@ if ($viewUserId > 0) {
           <div class="post-image image-gradient"></div>
           <div class="post-actions">
             <div class="post-actions-left">
-              <?php $isPostLiked = isLoggedIn() && isLiked($post['id'], $currentUserId); ?>
-              <?php if (isLoggedIn()): ?>
               <form method="post" class="like-form">
                 <input type="hidden" name="action" value="like" />
                 <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
-                <button class="action-btn like-button <?php echo $isPostLiked ? 'liked' : ''; ?>" type="submit" aria-label="Like">
-                  <svg viewBox="0 0 24 24" fill="<?php echo $isPostLiked ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2">
+                <button class="action-btn like-button" type="submit" aria-label="Like">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
                 </button>
               </form>
-              <?php else: ?>
-              <button class="action-btn like-button" type="button" onclick="window.location.href='login.php'" aria-label="Like">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-              </button>
-              <?php endif; ?>
               <button class="action-btn comment-btn" data-target="comment_text_<?php echo (int)$post['id']; ?>" aria-label="Reactie">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
@@ -189,87 +175,16 @@ if ($viewUserId > 0) {
             </p>
             <p class="post-comments"><?php echo (int)$post['comment_count']; ?> reacties</p>
           </div>
-      <?php if ($isOwnProfile): ?>
-      <form method="post" class="comment-form" style="margin-top: 16px;">
-        <input type="hidden" name="action" value="comment" />
-        <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
-        <input id="comment_text_<?php echo (int)$post['id']; ?>" type="text" name="comment_text" placeholder="Reactie toevoegen..." required />
-        <button type="submit">Plaatsen</button>
-      </form>
-      <?php endif; ?>
+          <form method="post" class="comment-form">
+            <input type="hidden" name="action" value="comment" />
+            <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
+            <input id="comment_text_<?php echo (int)$post['id']; ?>" type="text" name="comment_text" placeholder="Reactie toevoegen..." required />
+            <button type="submit">Plaatsen</button>
+          </form>
         </article>
         <?php endforeach; ?>
       </div>
       <?php endif; ?>
-      </div>
-      <div id="liked-tab" style="display: none;">
-        <?php
-        $likedPosts = getLikedPosts($user['id'], 20);
-        if (empty($likedPosts)):
-        ?>
-        <div class="empty-state">
-          <p><?php echo $isOwnProfile ? 'Je hebt nog geen posts geliked' : 'Deze gebruiker heeft nog geen posts geliked'; ?></p>
-        </div>
-        <?php else: ?>
-        <div class="profile-posts">
-          <?php foreach ($likedPosts as $post): ?>
-          <article class="post-card">
-            <div class="post-header">
-              <div class="post-user">
-                <div class="post-avatar"></div>
-                <div class="post-user-info">
-                  <span class="post-username"><?php echo htmlspecialchars($post['username'], ENT_QUOTES, 'UTF-8'); ?></span>
-                  <span class="post-location"><?php echo date('d M Y', strtotime($post['created_at'])); ?></span>
-                </div>
-              </div>
-            </div>
-            <div class="post-image image-gradient"></div>
-            <div class="post-actions">
-              <div class="post-actions-left">
-                <?php $isPostLiked = isLoggedIn() && isLiked($post['id'], $currentUserId); ?>
-                <?php if (isLoggedIn()): ?>
-                <form method="post" class="like-form">
-                  <input type="hidden" name="action" value="like" />
-                  <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
-                  <button class="action-btn like-button <?php echo $isPostLiked ? 'liked' : ''; ?>" type="submit" aria-label="Like">
-                    <svg viewBox="0 0 24 24" fill="<?php echo $isPostLiked ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                    </svg>
-                  </button>
-                </form>
-                <?php else: ?>
-                <button class="action-btn like-button" type="button" onclick="window.location.href='login.php'" aria-label="Like">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                  </svg>
-                </button>
-                <?php endif; ?>
-                <button class="action-btn comment-btn" data-target="comment_text_<?php echo (int)$post['id']; ?>" aria-label="Reactie">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="post-info">
-              <p class="post-likes"><?php echo (int)$post['like_count']; ?> vind-ik-leuks</p>
-              <p class="post-caption">
-                <span class="caption-username"><?php echo htmlspecialchars($post['username'], ENT_QUOTES, 'UTF-8'); ?></span>
-                <?php echo htmlspecialchars($post['caption'], ENT_QUOTES, 'UTF-8'); ?>
-              </p>
-              <p class="post-comments"><?php echo (int)$post['comment_count']; ?> reacties</p>
-            </div>
-            <form method="post" class="comment-form" style="margin-top: 16px;">
-              <input type="hidden" name="action" value="comment" />
-              <input type="hidden" name="post_id" value="<?php echo (int)$post['id']; ?>" />
-              <input id="comment_text_<?php echo (int)$post['id']; ?>" type="text" name="comment_text" placeholder="Reactie toevoegen..." required />
-              <button type="submit">Plaatsen</button>
-            </form>
-          </article>
-          <?php endforeach; ?>
-        </div>
-        <?php endif; ?>
-      </div>
     </div>
     <?php endif; ?>
   </main>
@@ -289,16 +204,26 @@ if ($viewUserId > 0) {
     </div>
   </div>
 
+  <!-- Bio Modal -->
+  <div id="bioModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Bio Bewerken</h2>
+        <button class="modal-close" onclick="document.getElementById('bioModal').style.display='none'">×</button>
+      </div>
+      <form method="post" class="modal-form">
+        <input type="hidden" name="action" value="update_bio" />
+        <textarea name="bio" placeholder="Vertel iets over jezelf..." maxlength="150"><?php echo isset($user['bio']) ? htmlspecialchars($user['bio'], ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
+        <button type="submit" class="modal-submit">Opslaan</button>
+      </form>
+    </div>
+  </div>
+
   <script>
-    function showTab(tabName) {
-      document.getElementById('posts-tab').style.display = tabName === 'posts' ? 'block' : 'none';
-      document.getElementById('liked-tab').style.display = tabName === 'liked' ? 'block' : 'none';
-      
-      var tabs = document.querySelectorAll('.tab-btn');
-      tabs.forEach(function(tab) {
-        tab.classList.remove('active');
-      });
-      event.target.classList.add('active');
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+      }
     }
   </script>
 
@@ -397,26 +322,15 @@ if ($viewUserId > 0) {
     }
     .profile-bio-edit {
       margin-bottom: 24px;
-      display: flex;
-      gap: 12px;
     }
-    .profile-bio-edit button,
-    .profile-bio-edit a {
+    .profile-bio-edit button {
       padding: 10px 20px;
       border-radius: 10px;
       transition: all 0.2s ease;
     }
-    .profile-bio-edit button:hover,
-    .profile-bio-edit a:hover {
+    .profile-bio-edit button:hover {
       transform: translateY(-1px);
       box-shadow: var(--shadow);
-    }
-    .logout-btn {
-      background: #ef4444;
-      color: white;
-    }
-    .logout-btn:hover {
-      background: #dc2626;
     }
     .profile-tabs {
       display: flex;

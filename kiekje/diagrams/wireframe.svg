@@ -1,0 +1,53 @@
+<svg viewBox="0 0 760 560" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica,Arial,sans-serif">
+<style>
+  .frame{fill:none;stroke:#F5F1EA;stroke-width:1.5;}
+  .box{fill:none;stroke:#8A8378;stroke-width:1;stroke-dasharray:3 3;}
+  .lbl{fill:#8A8378;font-size:10px;}
+  .circ{fill:none;stroke:#8A8378;stroke-width:1;}
+</style>
+<rect width="760" height="560" fill="#0F0D0B"/>
+<text x="30" y="30" fill="#F5F1EA" font-size="14" font-weight="700">Wireframe — Feed-scherm (mobile)</text>
+
+<g transform="translate(30,50)">
+  <rect class="frame" x="0" y="0" width="280" height="480" rx="14"/>
+
+  <!-- topbar -->
+  <rect class="box" x="10" y="10" width="260" height="30"/>
+  <text x="20" y="30" class="lbl">Kiekje    [zoek]  [+]</text>
+
+  <!-- stories -->
+  <circle class="circ" cx="30" cy="65" r="16"/>
+  <circle class="circ" cx="65" cy="65" r="16"/>
+  <circle class="circ" cx="100" cy="65" r="16"/>
+  <circle class="circ" cx="135" cy="65" r="16"/>
+  <circle class="circ" cx="170" cy="65" r="16"/>
+  <text x="10" y="95" class="lbl">verhalen</text>
+
+  <!-- post 1 -->
+  <rect class="box" x="10" y="105" width="260" height="200"/>
+  <circle class="circ" cx="24" cy="120" r="8"/>
+  <text x="38" y="124" class="lbl">gebruikersnaam · locatie</text>
+  <rect class="box" x="10" y="132" width="260" height="140"/>
+  <text x="135" y="205" class="lbl" text-anchor="middle">[ foto ]</text>
+  <text x="16" y="288" class="lbl">♡ 💬 ↗        128 likes</text>
+  <text x="16" y="300" class="lbl">bijschrift...</text>
+
+  <!-- post 2 (cut off) -->
+  <rect class="box" x="10" y="315" width="260" height="150"/>
+  <text x="135" y="395" class="lbl" text-anchor="middle">[ volgend kiekje ]</text>
+
+  <!-- bottom nav -->
+  <rect class="box" x="10" y="445" width="260" height="25"/>
+  <text x="30" y="462" class="lbl">⌂   🔍   ＋   ♡   ◐</text>
+</g>
+
+<g transform="translate(380,50)">
+  <text x="0" y="0" fill="#F5F1EA" font-size="12" font-weight="700">Toelichting</text>
+  <text x="0" y="26" class="lbl">- Verhalen-balk bovenaan: horizontaal scrollen</text>
+  <text x="0" y="46" class="lbl">- Eén kolom feed, vierkante foto's</text>
+  <text x="0" y="66" class="lbl">- Acties direct onder de foto (like/comment/share)</text>
+  <text x="0" y="86" class="lbl">- Vaste bottom-navigatie met 5 iconen</text>
+  <text x="0" y="106" class="lbl">- "+" opent modal om nieuw kiekje te plaatsen</text>
+  <text x="0" y="126" class="lbl">- Grid-indeling wordt hergebruikt op het profielscherm</text>
+</g>
+</svg>

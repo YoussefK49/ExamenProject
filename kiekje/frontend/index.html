@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kiekje</title>
+<style>
+  :root{
+    --bg:#14120F;
+    --surface:#1F1C18;
+    --accent:#E8A33D;
+    --accent-2:#D9667A;
+    --text:#F5F1EA;
+    --muted:#8A8378;
+    --hairline:#332E27;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI', -apple-system, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{ font-family: Georgia, 'Times New Roman', serif; font-weight:600; letter-spacing:-0.01em; }
+  #root{max-width:470px;margin:0 auto;min-height:100vh;background:var(--bg);
+    border-left:1px solid var(--hairline); border-right:1px solid var(--hairline);
+    position:relative;padding-bottom:64px;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;
+    padding:18px 16px 10px;border-bottom:1px solid var(--hairline);}
+  .brand{font-size:22px;display:flex;align-items:center;gap:8px;}
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  .icon-btn{background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;opacity:.85;}
+  .icon-btn:hover{opacity:1;}
+
+  .film-strip{display:flex;gap:3px;padding:6px 16px;background:var(--surface);}
+  .film-strip span{flex:1;height:4px;background:var(--hairline);}
+
+  .stories{display:flex;gap:14px;padding:14px 16px;overflow-x:auto;border-bottom:1px solid var(--hairline);}
+  .story{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;}
+  .story-ring{width:58px;height:58px;border-radius:50%;padding:2px;
+    background:conic-gradient(from 210deg, var(--accent), var(--accent-2), var(--accent));}
+  .story-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg);display:block;}
+  .story-name{font-size:11px;color:var(--muted);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .story-add{width:58px;height:58px;border-radius:50%;border:1px dashed var(--muted);
+    display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);}
+
+  .avatar{border-radius:50%;object-fit:cover;display:flex;align-items:center;justify-content:center;
+    color:#14120F;font-weight:700;flex-shrink:0;}
+
+  .post{border-bottom:1px solid var(--hairline);padding-bottom:12px;}
+  .post-head{display:flex;align-items:center;gap:10px;padding:12px 16px;}
+  .post-head .avatar{width:34px;height:34px;font-size:14px;}
+  .post-user{font-weight:600;font-size:14px;flex:1;}
+  .post-loc{font-size:11px;color:var(--muted);}
+  .post-media{width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--surface);display:block;}
+  .post-media-frame{position:relative;}
+  .sprocket-row{display:flex;justify-content:space-between;position:absolute;left:0;right:0;padding:0 6px;pointer-events:none;}
+  .sprocket-row.top{top:6px;} .sprocket-row.bottom{bottom:6px;}
+  .sprocket{width:6px;height:10px;background:rgba(20,18,15,.55);border-radius:1px;}
+  .post-actions{display:flex;align-items:center;gap:14px;padding:10px 16px 4px;font-size:20px;}
+  .post-actions button{background:none;border:none;color:var(--text);cursor:pointer;padding:0;
+    transition:transform .12s ease;}
+  .post-actions button:active{transform:scale(1.25);}
+  .liked{color:var(--accent-2);}
+  .post-likes{padding:2px 16px;font-size:13px;font-weight:600;}
+  .post-caption{padding:2px 16px;font-size:13px;line-height:1.5;}
+  .post-caption b{margin-right:6px;}
+  .post-time{padding:0 16px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .comment-box{display:flex;gap:8px;padding:8px 16px 0;align-items:center;}
+  .comment-box input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--hairline);
+    color:var(--text);font-family:inherit;font-size:13px;padding:6px 0;}
+  .comment-box input:focus{outline:none;border-color:var(--accent);}
+  .comment-box button{background:none;border:none;color:var(--accent);font-weight:600;font-size:12px;cursor:pointer;}
+  .comment-item{padding:2px 16px;font-size:12.5px;color:var(--muted);}
+  .comment-item b{color:var(--text);margin-right:5px;}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;
+    align-items:center;justify-content:center;z-index:20;}
+  .modal{background:var(--surface);width:88%;max-width:400px;padding:20px;border:1px solid var(--hairline);}
+  .modal h3{margin:0 0 12px;}
+  .drop{border:1px dashed var(--muted);padding:20px;text-align:center;color:var(--muted);
+    font-size:13px;cursor:pointer;margin-bottom:12px;}
+  .drop img{max-width:100%;max-height:180px;display:block;margin:0 auto;}
+  .modal textarea{width:100%;background:transparent;border:1px solid var(--hairline);color:var(--text);
+    font-family:inherit;padding:8px;font-size:13px;resize:none;height:60px;margin-bottom:12px;}
+  .modal input[type=text]{width:100%;background:transparent;border:1px solid var(--hairline);color:var(--text);
+    font-family:inherit;padding:8px;font-size:13px;margin-bottom:12px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+  .btn{background:var(--accent);color:#14120F;border:none;padding:9px 16px;font-weight:700;
+    font-size:13px;cursor:pointer;letter-spacing:.02em;}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--hairline);}
+
+  .bottomnav{position:sticky;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--hairline);
+    display:flex;justify-content:space-around;padding:10px 0;max-width:470px;margin:0 auto;}
+  .bottomnav button{background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;}
+  .bottomnav button.active{color:var(--accent);}
+
+  .auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:22px;padding:24px;text-align:center;}
+  .auth-screen h1{font-size:40px;margin:0;}
+  .auth-screen p{color:var(--muted);font-size:13px;max-width:280px;margin:0;}
+  .auth-form{display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;}
+  .auth-form input{background:var(--surface);border:1px solid var(--hairline);color:var(--text);
+    padding:11px 12px;font-family:inherit;font-size:13px;}
+  .auth-form input:focus{outline:none;border-color:var(--accent);}
+
+  .profile-head{display:flex;gap:18px;padding:20px 16px;align-items:center;}
+  .profile-head .avatar{width:78px;height:78px;font-size:26px;}
+  .profile-stats{display:flex;gap:18px;font-size:13px;}
+  .profile-stats b{display:block;font-size:16px;font-family:Georgia,serif;}
+  .profile-bio{padding:0 16px 14px;font-size:13px;color:var(--muted);}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+  .grid img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;}
+  .empty-state{padding:40px 24px;color:var(--muted);font-size:13px;text-align:center;line-height:1.6;}
+  .logout-link{padding:4px 16px 20px;font-size:12px;color:var(--muted);cursor:pointer;text-align:center;}
+  .logout-link:hover{color:var(--text);}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+const STORAGE_KEY = 'kiekje_state_v1';
+const API_BASE = '../backend/api/';
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { user: null, posts: [], stories: [], authMode: 'register' };
+}
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){}
+}
+
+let state = loadState();
+let currentTab = 'feed';
+let showUpload = false;
+let uploadPreview = null;
+let authMessage = '';
+
+const root = document.getElementById('root');
+
+function esc(str){
+  const d = document.createElement('div');
+  d.innerText = str || '';
+  return d.innerHTML;
+}
+
+function sprockets(){
+  let dots = '';
+  for(let i=0;i<14;i++) dots += '<div class="sprocket"></div>';
+  return dots;
+}
+
+function colorFor(name){
+  const colors = ['#E8A33D','#D9667A','#6E9887','#8C7BC4','#C2703D'];
+  let hash = 0;
+  for(let i=0;i<name.length;i++) hash = name.charCodeAt(i) + ((hash<<5)-hash);
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function avatar(name, size){
+  const initial = (name||'?').trim().charAt(0).toUpperCase();
+  const bg = colorFor(name||'?');
+  return `<div class="avatar" style="width:${size}px;height:${size}px;background:${bg};font-size:${Math.round(size*0.4)}px;">${esc(initial)}</div>`;
+}
+
+async function apiRequest(path, options = {}){
+  const headers = new Headers(options.headers || {});
+  if (options.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  const response = await fetch(`${API_BASE}${path}`, {
+    credentials: 'include',
+    ...options,
+    headers
+  });
+
+  let payload = null;
+  try { payload = await response.json(); } catch (e) { payload = {}; }
+
+  if (!response.ok) {
+    throw new Error(payload.error || 'Er ging iets mis.');
+  }
+
+  return payload;
+}
+
+function mapPostFromApi(row){
+  return {
+    id: row.id,
+    user: row.username || 'Gebruiker',
+    img: row.image_url || '',
+    caption: row.caption || '',
+    loc: row.location || '',
+    time: row.created_at || '',
+    likes: Number(row.like_count || 0),
+    liked: false,
+    comments: []
+  };
+}
+
+async function loadFeed(){
+  try {
+    const rows = await apiRequest('posts.php');
+    const posts = [];
+
+    for (const row of rows) {
+      const post = mapPostFromApi(row);
+      try {
+        const comments = await apiRequest(`interactions.php?action=comments&post_id=${row.id}`);
+        post.comments = comments.map(c => ({ user: c.username, text: c.content }));
+      } catch (e) {
+        post.comments = [];
+      }
+      posts.push(post);
+    }
+
+    state.posts = posts;
+    saveState();
+    render();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// ---------- Render ----------
+function render(){
+  if(!state.user){ renderAuth(); return; }
+
+  let html = `
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span> Kiekje</div>
+      <button class="icon-btn" id="btn-open-upload">＋</button>
+    </div>
+    <div class="film-strip">${'<span></span>'.repeat(26)}</div>
+  `;
+
+  if(currentTab === 'feed'){
+    html += `<div class="stories">
+      <div class="story" id="btn-add-story"><div class="story-add">+</div><div class="story-name">Jouw verhaal</div></div>
+      ${state.stories.map(s => `
+        <div class="story">
+          <div class="story-ring"><img src="${s.img}"></div>
+          <div class="story-name">${esc(s.name)}</div>
+        </div>`).join('')}
+    </div>`;
+
+    if(state.posts.length === 0){
+      html += `<div class="empty-state">Nog geen kiekjes geplaatst.<br>Druk op ＋ om je eerste foto te delen.</div>`;
+    } else {
+      html += `<div id="feed">${state.posts.map(renderPost).join('')}</div>`;
+    }
+  } else if(currentTab === 'profile'){
+    html += renderProfile();
+  }
+
+  if(showUpload) html += renderUploadModal();
+
+  html += `
+    <div class="bottomnav">
+      <button class="${currentTab==='feed'?'active':''}" id="nav-feed">⌂</button>
+      <button>🔍</button>
+      <button id="nav-upload">＋</button>
+      <button>♡</button>
+      <button class="${currentTab==='profile'?'active':''}" id="nav-profile">◐</button>
+    </div>`;
+
+  root.innerHTML = html;
+  attachEvents();
+}
+
+function renderPost(p){
+  return `
+    <div class="post" data-id="${p.id}">
+      <div class="post-head">
+        ${avatar(p.user, 34)}
+        <div>
+          <div class="post-user">${esc(p.user)}</div>
+          <div class="post-loc">${esc(p.loc||'')}</div>
+        </div>
+      </div>
+      <div class="post-media-frame">
+        <div class="sprocket-row top">${sprockets()}</div>
+        <img class="post-media" src="${p.img}">
+        <div class="sprocket-row bottom">${sprockets()}</div>
+      </div>
+      <div class="post-actions">
+        <button class="like-btn ${p.liked?'liked':''}" data-id="${p.id}">${p.liked?'♥':'♡'}</button>
+        <button>💬</button>
+        <button>↗</button>
+      </div>
+      <div class="post-likes">${p.likes} vind-ik-leuks</div>
+      ${p.caption ? `<div class="post-caption"><b>${esc(p.user)}</b>${esc(p.caption)}</div>` : ''}
+      ${p.comments.map(c => `<div class="comment-item"><b>${esc(c.user)}</b>${esc(c.text)}</div>`).join('')}
+      <div class="post-time">${esc(p.time)}</div>
+      <div class="comment-box">
+        <input type="text" placeholder="Voeg een reactie toe..." class="comment-input" data-id="${p.id}">
+        <button class="comment-submit" data-id="${p.id}">Plaats</button>
+      </div>
+    </div>`;
+}
+
+function renderProfile(){
+  const mine = state.posts.filter(p => p.user === state.user.username);
+  return `
+    <div class="profile-head">
+      ${avatar(state.user.username, 78)}
+      <div>
+        <div style="font-weight:700;margin-bottom:6px;">${esc(state.user.username)}</div>
+        <div class="profile-stats">
+          <div><b>${mine.length}</b>kiekjes</div>
+          <div><b>0</b>volgers</div>
+          <div><b>0</b>volgend</div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-bio">${esc(state.user.bio||'')}</div>
+    <div class="grid">
+      ${mine.length
+        ? mine.map(p => `<img src="${p.img}">`).join('')
+        : `<div class="empty-state" style="grid-column:span 3;">Nog geen kiekjes.</div>`}
+    </div>
+    <div class="logout-link" id="btn-logout">Uitloggen</div>`;
+}
+
+function renderUploadModal(){
+  return `
+    <div class="modal-backdrop" id="modal-backdrop">
+      <div class="modal" id="modal-box">
+        <h3>Nieuw kiekje</h3>
+        <div class="drop" id="drop-zone">
+          ${uploadPreview ? `<img src="${uploadPreview}">` : 'Klik om een foto te kiezen'}
+        </div>
+        <input type="file" accept="image/*" id="file-input" style="display:none">
+        <textarea id="caption-input" placeholder="Schrijf een bijschrift..."></textarea>
+        <div class="modal-actions">
+          <button class="btn ghost" id="btn-cancel-upload">Annuleren</button>
+          <button class="btn" id="btn-submit-upload">Plaatsen</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderAuth(){
+  root.innerHTML = `
+    <div class="auth-screen">
+      <div>
+        <h1>Kiekje.</h1>
+        <p>Vastleggen wat het waard is om nooit te vergeten.</p>
+      </div>
+      <div class="auth-form">
+        <input type="text" id="auth-username" placeholder="Gebruikersnaam">
+        <input type="email" id="auth-email" placeholder="E-mailadres">
+        <input type="password" id="auth-password" placeholder="Wachtwoord (min. 8 tekens)">
+        <input type="text" id="auth-bio" placeholder="Korte bio (optioneel)">
+        <div class="modal-actions">
+          <button class="btn ghost" id="btn-toggle-auth">${state.authMode === 'login' ? 'Maak account' : 'Heb je al een account?'}</button>
+          <button class="btn" id="btn-auth-submit">${state.authMode === 'login' ? 'Inloggen' : 'Account aanmaken'}</button>
+        </div>
+        ${authMessage ? `<div style="font-size:12px;color:var(--accent);">${esc(authMessage)}</div>` : ''}
+      </div>
+    </div>`;
+
+  document.getElementById('btn-toggle-auth').addEventListener('click', () => {
+    state.authMode = state.authMode === 'login' ? 'register' : 'login';
+    authMessage = '';
+    render();
+  });
+
+  document.getElementById('btn-auth-submit').addEventListener('click', async () => {
+    const username = document.getElementById('auth-username').value.trim();
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const bio = document.getElementById('auth-bio').value.trim();
+
+    if(!username || !email || !password){
+      authMessage = 'Vul alle velden in.';
+      render();
+      return;
+    }
+
+    try {
+      const action = state.authMode === 'login' ? 'login' : 'register';
+      const payload = { username, email, password };
+      const result = await apiRequest(`auth.php?action=${action}`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      state.user = { username: result.username, bio };
+      authMessage = '';
+      currentTab = 'feed';
+      saveState();
+      await loadFeed();
+    } catch (error) {
+      authMessage = error.message;
+      render();
+    }
+  });
+}
+
+// ---------- Events ----------
+function attachEvents(){
+  const openUpload = () => { showUpload = true; uploadPreview = null; render(); };
+  const nf = document.getElementById('btn-open-upload'); if(nf) nf.onclick = openUpload;
+  const nu = document.getElementById('nav-upload'); if(nu) nu.onclick = openUpload;
+
+  const navFeed = document.getElementById('nav-feed');
+  if(navFeed) navFeed.onclick = () => { currentTab = 'feed'; render(); };
+  const navProfile = document.getElementById('nav-profile');
+  if(navProfile) navProfile.onclick = () => { currentTab = 'profile'; render(); };
+
+  const logout = document.getElementById('btn-logout');
+  if(logout) logout.onclick = () => {
+    state.user = null;
+    authMessage = '';
+    saveState();
+    render();
+  };
+
+  const addStory = document.getElementById('btn-add-story');
+  if(addStory) addStory.onclick = () => {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*';
+    inp.onchange = (e) => {
+      const f = e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.stories.unshift({ id: Date.now(), name: state.user.username, img: reader.result });
+        saveState();
+        render();
+      };
+      reader.readAsDataURL(f);
+    };
+    inp.click();
+  };
+
+  document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.onclick = async () => {
+      const id = Number(btn.dataset.id);
+      const p = state.posts.find(x => x.id === id);
+      try {
+        const result = await apiRequest('interactions.php?action=like', {
+          method: 'POST',
+          body: JSON.stringify({ post_id: id })
+        });
+        p.liked = result.liked;
+        p.likes += result.liked ? 1 : -1;
+        saveState();
+        render();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  });
+
+  document.querySelectorAll('.comment-submit').forEach(btn => {
+    btn.onclick = () => addComment(Number(btn.dataset.id));
+  });
+  document.querySelectorAll('.comment-input').forEach(inp => {
+    inp.addEventListener('keydown', e => {
+      if(e.key === 'Enter') addComment(Number(inp.dataset.id));
+    });
+  });
+
+  const backdrop = document.getElementById('modal-backdrop');
+  if(backdrop){
+    backdrop.addEventListener('click', e => { if(e.target === backdrop){ showUpload=false; render(); } });
+    document.getElementById('modal-box').addEventListener('click', e => e.stopPropagation());
+    document.getElementById('drop-zone').onclick = () => document.getElementById('file-input').click();
+    document.getElementById('file-input').addEventListener('change', e => {
+      const f = e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = () => { uploadPreview = reader.result; render(); };
+      reader.readAsDataURL(f);
+    });
+    document.getElementById('btn-cancel-upload').onclick = () => { showUpload=false; render(); };
+    document.getElementById('btn-submit-upload').onclick = async () => {
+      if(!uploadPreview) return;
+      const caption = document.getElementById('caption-input').value;
+      try {
+        await apiRequest('posts.php', {
+          method: 'POST',
+          body: JSON.stringify({ image_url: uploadPreview, caption, location: '' })
+        });
+        showUpload = false;
+        currentTab = 'profile';
+        await loadFeed();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  }
+}
+
+async function addComment(postId){
+  const input = document.querySelector(`.comment-input[data-id="${postId}"]`);
+  const text = input.value.trim();
+  if(!text) return;
+
+  try {
+    await apiRequest('interactions.php?action=comment', {
+      method: 'POST',
+      body: JSON.stringify({ post_id: postId, content: text })
+    });
+    const p = state.posts.find(x => x.id === postId);
+    p.comments.push({ user: state.user.username, text });
+    input.value = '';
+    saveState();
+    render();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+render();
+</script>
+</body>
+</html>

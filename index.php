@@ -26,19 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
         exit;
     }
 
-    if ($action === 'follow' && !empty($_POST['following_id'])) {
-        $followingId = (int) $_POST['following_id'];
-        followUser($userId, $followingId);
-        header('Location: index.php');
-        exit;
-    }
-
-    if ($action === 'unfollow' && !empty($_POST['following_id'])) {
-        $followingId = (int) $_POST['following_id'];
-        unfollowUser($userId, $followingId);
-        header('Location: index.php');
-        exit;
-    }
 }
 
 $posts = getPosts(10);
@@ -147,7 +134,6 @@ $suggestedUsers = isLoggedIn() ? getSuggestedUsers($userId, 3) : [];
           <span class="sidebar-username"><?php echo htmlspecialchars($_SESSION['username'], ENT_QUOTES, 'UTF-8'); ?></span>
           <span class="sidebar-fullname"><?php echo htmlspecialchars($_SESSION['username'], ENT_QUOTES, 'UTF-8'); ?></span>
         </div>
-        <a href="logout.php" class="switch-btn">Uitloggen</a>
         <?php else: ?>
         <div class="sidebar-avatar"></div>
         <div class="sidebar-info">
@@ -157,6 +143,7 @@ $suggestedUsers = isLoggedIn() ? getSuggestedUsers($userId, 3) : [];
         <a href="login.php" class="switch-btn">Inloggen</a>
         <?php endif; ?>
       </div>
+<<<<<<< Updated upstream
       <div class="sidebar-suggestions">
         <div class="suggestions-header">
           <span>Suggesties voor jou</span>
@@ -194,6 +181,8 @@ $suggestedUsers = isLoggedIn() ? getSuggestedUsers($userId, 3) : [];
         <?php endforeach; ?>
         <?php endif; ?>
       </div>
+=======
+>>>>>>> Stashed changes
       <div class="sidebar-footer">
         <p>Over · Help · Pers · API · Vacatures · Privacy · Voorwaarden · Locaties · Taal</p>
         <p>© 2026 INSTANT</p>
